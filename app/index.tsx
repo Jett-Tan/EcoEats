@@ -1,16 +1,21 @@
-import { Text, View, SafeAreaView, StyleSheet } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Link, useNavigation } from 'expo-router';
+import { Text, View, SafeAreaView, StyleSheet, Button } from "react-native";
+import { Link, useRouter, Redirect } from 'expo-router';
 
 export default function Index() {
+  const router = useRouter();
   
+  const login = () => {
+    router.replace('./(tabs)/home');
+  }
   return (
-     <SafeAreaView style={styles.container}>
+     <View style={styles.container}>
         {/* TODO:: add Icon of the app and create multiple links for login*/}
         <Text>My App</Text>
-        
-        <Link href="./(tabs)/home">View first user details</Link>
-    </SafeAreaView>
+        <Button 
+        title="Login"
+        onPress={login}/>
+        {/* <Link href="./(tabs)/home">move to login</Link> */}
+    </View>
   );
 }
 const styles = StyleSheet.create({
