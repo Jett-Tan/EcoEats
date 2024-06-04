@@ -1,19 +1,28 @@
-import { Text, View, SafeAreaView, StyleSheet, Button } from "react-native";
-import { Link, useRouter, Redirect } from 'expo-router';
+import { Text, View, StyleSheet, Image } from "react-native";
+import { Link } from 'expo-router';
+
+import LoginButton from "../components/LoginButton";
 
 export default function Index() {
-  const router = useRouter();
-  
-  const login = () => {
-    router.replace('./(tabs)/home');
-  }
   return (
      <View style={styles.container}>
         {/* TODO:: add Icon of the app and create multiple links for login*/}
-        <Text>My App</Text>
-        <Button 
-        title="Login"
-        onPress={login}/>
+        <View style={styles.icon}>
+          <Image style={{width:381, height: 152}} source={require('../assets/images/icon.jpg')} />
+        </View>
+        <LoginButton type="Google" />
+        <LoginButton type="Facebook" />
+        <LoginButton type="Apple" />
+        <LoginButton type="Email" />
+        <Text style={styles.paragraph_Box}>
+            <Text style={styles.paragraph}>By signing up, you agree to our </Text>
+            <Text style={[styles.paragraph,styles.paragraph_Bold]}>Terms of Service</Text> 
+            <Text style={styles.paragraph}> and </Text> 
+            <Text style={[styles.paragraph,styles.paragraph_Bold]}>Privacy Policy</Text>
+        </Text>
+        <Text style={styles.paragraph_Box}>
+          <Link style={styles.paragraph} href="./signup">Sign up</Link>
+        </Text>
         {/* <Link href="./(tabs)/home">move to login</Link> */}
     </View>
   );
@@ -26,10 +35,30 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf0f1',
     padding: 8,
   },
+  icon:{
+    width: 381,
+    height: 152,
+    resizeMode: "cover",
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 87,
+    overflow: "hidden",
+    marginBottom: 100,
+  },
+  paragraph_Box:{
+    marginBottom: 24,
+  },
   paragraph: {
-    margin: 24,
-    fontSize: 18,
+    fontSize: 10,
     fontWeight: 'bold',
     textAlign: 'center',
+    color:"#000000",
+    opacity:0.4
+  },
+  paragraph_Bold: {
+    color:"#4BB469",
+    fontWeight: 'bold',
+    textAlign: 'center',
+    opacity:1
   },
 });
