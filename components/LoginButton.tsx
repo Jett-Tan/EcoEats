@@ -3,12 +3,13 @@ import { Pressable, StyleSheet, View, Text } from "react-native";
 
 
 export default function LoginButton(props: {
-    type: "Email" | "Google" | "Facebook" | "Apple" 
+    type: "Email" | "Google" | "Facebook" | "Apple",
+    onPress: () => void
 }) {
     return (
         <>
             <View style={styles.buttonContainer}>
-                <Pressable style={styles.button}>
+                <Pressable style={styles.button} onPress={props.onPress}>
                     <Text style={styles.text}>Continue with {props.type}</Text>
                 </Pressable>
             </View>

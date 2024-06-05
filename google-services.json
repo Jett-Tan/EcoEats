@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "423747071672",
+    "project_id": "ecoeats-00000",
+    "storage_bucket": "ecoeats-00000.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:423747071672:android:fea273d32bfeb00f2b4e4d",
+        "android_client_info": {
+          "package_name": "com.ecoeats"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "423747071672-r6f9fror2jnauauhl9e3v33a0m085q13.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApJiEyNf5KmAolW_Lc-Li9JaWz62NYLUI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "423747071672-r6f9fror2jnauauhl9e3v33a0m085q13.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
