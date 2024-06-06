@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../.expo/types/types';
@@ -13,14 +13,23 @@ type Props = {
   route: HomeScreenRouteProp;
 };
 
-const items = [
+type Item = {
+  id: number;
+  title: string;
+  store: string;
+  location: string;
+  rating: number;
+  bookmarked: boolean; // Add bookmarked field
+};
+
+const discountedItems: Item[] = [
   {
     id: 1,
     title: 'Fruits and Vegetables',
     store: 'Fairprice',
     location: '63 Jurong West Central 3, #03 - 01 Jurong Point, Singapore 648331',
     rating: 5.0,
-    //image: require('./path/to/fruits_image.jpg'), // Replace with actual image path
+    bookmarked: false, // Initial bookmarked status
   },
   {
     id: 2,
@@ -28,33 +37,125 @@ const items = [
     store: 'BreadTalk',
     location: '63 Jurong West Central 3, #B1 - 72 / 73, Singapore 648331',
     rating: 4.5,
-    //image: require('./path/to/bread_image.jpg'), // Replace with actual image path
+    bookmarked: false, // Initial bookmarked status
   },
-  // Add more items as needed
+  // Add more discounted items as needed
+];
+
+const surplusItems: Item[] = [
+  {
+    id: 1,
+    title: 'Fruits ',
+    store: 'NTUC',
+    location: '63 Jurong West Central 3, #03 - 01 Jurong Point, Singapore 648331',
+    rating: 5.0,
+    bookmarked: false, // Initial bookmarked status
+  },
+  {
+    id: 2,
+    title: 'Bread',
+    store: 'IBread',
+    location: '63 Jurong West Central 3, #B1 - 72 / 73, Singapore 648331',
+    rating: 4.5,
+    bookmarked: false, 
+  },
 ];
 
 export default function HomeTab({ navigation }: Props) {
+  const [discountedItemsState, setDiscountedItems] = useState<Item[]>(discountedItems); 
+  const [surplusItemsState, setSurplusItems] = useState<Item[]>(surplusItems); 
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filteredItems, setFilteredItems] = useState<Item[]>(discountedItems);
+  const [activeTab, setActiveTab] = useState<'Discounted' | 'Surplus'>('Discounted');
+
+  const toggleDiscountedBookmark = (id: number) => {
+    setDiscountedItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, bookmarked: !item.bookmarked } : item
+      )
+    );
+  };
+
+  const toggleSurplusBookmark = (id: number) => {
+    setSurplusItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, bookmarked: !item.bookmarked } : item
+      )
+    );
+  };
+
+  // Choose items based on the active tab
+  let chosenItems = activeTab === 'Discounted' ? discountedItemsState : surplusItemsState;
+  const bookmarkedItems = chosenItems.filter(item => item.bookmarked);
+  const nonBookmarkedItems = chosenItems.filter(item => !item.bookmarked);
+  chosenItems = [...bookmarkedItems, ...nonBookmarkedItems];
+
+  const toggleBookmark = (id: number) => {
+    if (activeTab === 'Discounted') {
+      toggleDiscountedBookmark(id);
+    } else {
+      toggleSurplusBookmark(id);
+    }
+  };
+
+  useEffect(() => {
+    let filtered;
+    if (activeTab === 'Discounted') {
+      filtered = discountedItemsState.filter((item) =>
+        item.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    } else {
+      filtered = surplusItemsState.filter((item) =>
+        item.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    setFilteredItems(filtered);
+  }, [searchTerm, discountedItemsState, surplusItemsState, activeTab]);
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TextInput style={styles.searchBar} placeholder="Search" />
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search"
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+        />
         <Icon name="location-pin" type="material" color="#000" />
         <Icon name="bookmark-outline" type="material" color="#000" />
       </View>
       <View style={styles.tabContainer}>
-        <TouchableOpacity style={styles.activeTab}>
-          <Text style={styles.tabTextActive}>Discounted</Text>
+        <TouchableOpacity
+          style={[
+            styles.tab,
+            activeTab === 'Discounted' ? styles.activeTab : styles.inactiveTab,
+          ]}
+          onPress={() => setActiveTab('Discounted')}>
+          <Text style={activeTab === 'Discounted' ? styles.tabTextActive : styles.tabTextInactive}>Discounted</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.inactiveTab}>
-          <Text style={styles.tabTextInactive}>Surplus</Text>
+        <TouchableOpacity
+          style={[
+            styles.tab,
+            activeTab === 'Surplus' ? styles.activeTab : styles.inactiveTab,
+          ]}
+          onPress={() => setActiveTab('Surplus')}>
+          <Text style={activeTab === 'Surplus' ? styles.tabTextActive : styles.tabTextInactive}>Surplus</Text>
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        {items.map((item) => (
+        {chosenItems.map((item) => (
           <View key={item.id} style={styles.itemContainer}>
-            {/* <Image source={item.image} style={styles.itemImage} /> */}
-            <View style={styles.itemTextContainer}>
+            <View style={styles.itemHeader}>
               <Text style={styles.itemTitle}>{item.title}</Text>
+              <TouchableOpacity onPress={() => toggleBookmark(item.id)}>
+                <Icon
+                  name={item.bookmarked ? 'bookmark' : 'bookmark-outline'}
+                  type="material"
+                  color="#000"
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.itemTextContainer}>
               <Text style={styles.itemStore}>{item.store}</Text>
               <Text style={styles.itemLocation}>{item.location}</Text>
               <Text style={styles.itemRating}>{item.rating} ⭐️</Text>
@@ -72,11 +173,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   header: {
-    width: '100%', // Make header span the entire width
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 50,
+    paddingBottom: 16,
     backgroundColor: '#f8f8f8',
   },
   searchBar: {
@@ -94,15 +197,20 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#dcdcdc',
   },
+  tab: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
   activeTab: {
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 50,
     borderBottomWidth: 2,
     borderBottomColor: '#000',
   },
   inactiveTab: {
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 50,
   },
   tabTextActive: {
     fontSize: 16,
@@ -114,16 +222,16 @@ const styles = StyleSheet.create({
     color: '#a0a0a0',
   },
   scrollViewContainer: {
-    flex: 1, // Take up the remaining vertical space
+    flex: 1,
     padding: 16,
   },
   itemContainer: {
     marginBottom: 20,
   },
-  itemImage: {
-    width: '100%',
-    height: 150,
-    borderRadius: 8,
+  itemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   itemTextContainer: {
     marginTop: 8,
