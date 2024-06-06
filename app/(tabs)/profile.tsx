@@ -28,7 +28,7 @@
 import Input from "@/components/Input";
 import { Icon } from "@/components/navigation/Icon";
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface Review {
   name: string;
@@ -37,11 +37,11 @@ interface Review {
   date: string;
 }
 
-const[firstName, setFirstName] = useState('');
-    const[lastName, setLastName] = useState('');
-    const[dob, setDOB] = useState('');
-    const[gender, setGender] = useState('');
-    
+const [firstName, setFirstName] = useState('John');
+const [lastName, setLastName] = useState('Low');
+const [dob, setDOB] = useState('01/01/2000');
+const [gender, setGender] = useState('Male');
+
 const reviews: Review[] = [
   { name: 'John Doe', rating: 5, comment: 'Very trustworthy', date: '01-01-2024 01:01' },
   { name: 'Mei Li', rating: 4.5, comment: '', date: '' },
@@ -52,8 +52,12 @@ const ProfilePage: React.FC = () => {
     <ScrollView style={styles.container}>
       <View style={styles.upperBlock}></View>
       <View style={styles.headerRow}>
-      <Icon size={90} name="person-circle-sharp" />
-        <Text style={styles.headerText}>John Low</Text>
+
+        <View style={styles.headerRowLeft}>
+          <Icon size={90} name="person-circle-sharp" />
+          <Text style={styles.headerText}>John Low</Text>
+        </View>
+
         <View style={styles.rating}>
           <Text style={styles.ratingText}>5.0</Text>
           <Text style={styles.starText}>⭐</Text>
@@ -67,34 +71,45 @@ const ProfilePage: React.FC = () => {
         <Text style={styles.personalParticularsTitle}>Personal Particulars</Text>
         <View style={styles.betweenTextBlock}></View>
         <Input
-            type="First Name"
-            placeholder="Enter your First Name"
-            value={firstName}
-            onChangeText={setFirstName}
-            error=""
-            catchError={() => {}}
-            />
-          <View style={styles.betweenInputBlock}></View>
-        <View style={styles.field}>
-          <Text style={styles.label}>Last Name</Text>
-        </View>
-        <View style={styles.containerLeft}>
-        <TextInput style={styles.input} value="Low" editable={true} />
-          </View>
-          <View style={styles.betweenInputBlock}></View>
-        <View style={styles.field}>
-          <Text style={styles.label}>Date of Birth</Text>
-          </View>
-        <View style={styles.containerLeft}>
-        <TextInput style={styles.input} value="01/01/2000" editable={true} />
-          </View>
-          <View style={styles.betweenInputBlock}></View>
-        <View style={styles.field}>
-          <Text style={styles.label}>Gender</Text>
-        </View>
-        <View style={styles.containerLeft}>
-        <TextInput style={styles.input} value="Male" editable={true} />
-          </View>
+          type="First Name"
+          placeholder="Enter your First Name"
+          value={firstName}
+          onChangeText={setFirstName}
+          style={{
+            inputBox: { width: 350 },
+            input: styles.input
+          }}
+        />
+        <Input
+          type="Last Name"
+          placeholder="Enter your Last Name"
+          value={lastName}
+          onChangeText={setLastName}
+          style={{
+            inputBox: { width: 350 },
+            input: styles.input
+          }}
+        />
+        <Input
+          type="Date of Birth"
+          placeholder="Enter your Date of Birth"
+          value={dob}
+          onChangeText={setDOB}
+          style={{
+            inputBox: { width: 350 },
+            input: styles.input
+          }}
+        />
+        <Input
+          type="Gender"
+          placeholder="Enter your Gender"
+          value={gender}
+          onChangeText={setGender}
+          style={{
+            inputBox: { width: 350 },
+            input: styles.input
+          }}
+        />
       </View>
       <View style={styles.reviews}>
         {reviews.map((review, index) => (
@@ -119,7 +134,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   containerLeft: {
-    
+    textAlign: 'left',
   },
   upperBlock: {
     padding: 30,
@@ -133,6 +148,10 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerRowLeft: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   profileHeader: {

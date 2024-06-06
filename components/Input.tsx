@@ -2,24 +2,36 @@ import { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { Icon } from "./navigation/Icon";
 
-export default function Input(props:{
-    type:"Email" | "Password" | "Phone" | "Name" | "Username" | "Address" | "City" | "State" | "Country" | "First Name"| "Last Name" | "Date of Birth" | "Gender",
+interface TestProps {
+    type:"Email" | "Password" | "Phone" | "Name" | "Username" | "Address" | "City" | "State" | "Country" | "First Name" | "Last Name" | "Date of Birth" | "Gender",
     placeholder:string,
     value:string,
     onChangeText:Function,
-    error:string,
-    catchError:Function
-    style: {}
-}) {
+    error:String,
+    catchError:Function,
+    style?:{inputBox:Object, input:Object}
+}
+
+const defaultProps: TestProps = {
+    type:"Email" ,
+    placeholder:"",
+    value:"",
+    onChangeText:()=>{console.log("changed")},
+    error:"",
+    catchError:() => {console.log("changed")},
+    style:{inputBox:{}, input:{}}
+}
+
+export default function Input(props = defaultProps) {
     const [visible, setVisible] = useState(false);
     const [error, setError] = useState("");
     return (
         <>
             <View style={styles.input_Container}>
                 <Text style={styles.input_Title}>{props.type}</Text>
-                <View style={styles.input_Box} >
+                <View style={[styles.input_Box, props.style?.inputBox]} >
                     <TextInput 
-                        style={[styles.input, props.style]}
+                        style={[styles.input, props.style?.input]}
                         value={props.value} 
                         placeholder={props.placeholder}
                         placeholderTextColor="#A9A9A9"

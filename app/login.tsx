@@ -1,11 +1,11 @@
-import { Text, View, StyleSheet, Image, Pressable } from "react-native";
 import { Link, useRouter } from 'expo-router';
-import { useState } from "react";
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useState } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { Icon } from "@/components/navigation/Icon";
 import Input from "@/components/Input";
 import { auth } from "@/components/auth/firebaseConfig";
+import { Icon } from "@/components/navigation/Icon";
 
 export default function Index() {
     const[email, setEmail] = useState('');
@@ -49,6 +49,7 @@ export default function Index() {
                 onChangeText={setEmail} 
                 error={emailError} 
                 catchError={setEmailError}
+                style={styles.input}
             />
             <Input 
                 type="Password" 
@@ -57,6 +58,7 @@ export default function Index() {
                 onChangeText={setPassword} 
                 error={passwordError} 
                 catchError={setPasswordError}
+                style={styles.input}
             />
             <Pressable onPress={handleLogin}>
                 <View style={styles.button}>
@@ -140,5 +142,14 @@ const styles = StyleSheet.create({
         width: "100%",
         flexDirection: "row",
         justifyContent: "flex-start",
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#ddd',
+        backgroundColor: '#dcdcdc',
+        borderRadius: 5,
+        padding: 5,
+        flex: 1,
+        textAlign: 'left',
     }
 });
