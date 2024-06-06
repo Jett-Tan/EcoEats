@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { TextInput, View, Text, StyleSheet } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { Icon } from "./navigation/Icon";
 
 export default function Input(props:{
-    type:"Email" | "Password" | "Phone" | "Name" | "Username" | "Address" | "City" | "State" | "Country",
+    type:"Email" | "Password" | "Phone" | "Name" | "Username" | "Address" | "City" | "State" | "Country" | "First Name"| "Last Name" | "Date of Birth" | "Gender",
     placeholder:string,
     value:string,
     onChangeText:Function,
     error:string,
     catchError:Function
+    style: {}
 }) {
     const [visible, setVisible] = useState(false);
     const [error, setError] = useState("");
@@ -18,7 +19,7 @@ export default function Input(props:{
                 <Text style={styles.input_Title}>{props.type}</Text>
                 <View style={styles.input_Box} >
                     <TextInput 
-                        style={styles.input}
+                        style={[styles.input, props.style]}
                         value={props.value} 
                         placeholder={props.placeholder}
                         placeholderTextColor="#A9A9A9"
