@@ -1,15 +1,12 @@
-import { Tabs } from 'expo-router';
+import { Tabs, Stack, Navigator, useRootNavigationState } from 'expo-router';
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const onPress = () => {}
-  const isFocused = true
-  const label = 'Home'
+
   return (
     <Tabs
       screenOptions={{
@@ -31,18 +28,17 @@ export default function TabLayout() {
           title: 'Rewards',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'leaf' : 'leaf'} color={color} />
-          ),
-        }}
+            ),
+            }}
       />
       <Tabs.Screen
         name="add"
         options={{
-          
           title: 'Add',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'add-circle' : 'add-circle'} color={color}/>
           ),
-        }}
+          }}
       />
       <Tabs.Screen
         name="community"
@@ -53,7 +49,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      
       <Tabs.Screen
         name="profile"
         options={{

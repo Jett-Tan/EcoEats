@@ -1,32 +1,36 @@
 import { View, Text, StyleSheet, Modal, Button } from 'react-native';
 import { useState } from 'react';
+import { router } from 'expo-router';
 
 export default function AddTab() {
-  const [modalVisible, setModalVisible] = useState(true);
-  const toggleVisible = () => { setModalVisible(!modalVisible) }
-
+    const [modalVisible, setModalVisible] = useState(true);
+    const toggleModal = () => { setModalVisible(!modalVisible) }
+    if (modalVisible === false) {
+      toggleModal();
+    }
     return (
       <Modal
       visible = {modalVisible}
       transparent={true}
-      style={
-        {width: '100%', height: 100, backgroundColor: 'red'}
-      }
       >
-        <View style={{backgroundColor:"black", width:'100%',height:"60%", opacity:0.5, flexDirection:"column-reverse"}}>
+        <View style={{backgroundColor:"black", width:'100%',height:"60%", opacity:0.5}}>
         </View>
-        <View style={{
-          width:"100%",
-          height:"40%",
-          backgroundColor:"#fff",
-          justifyContent:"center",
-          alignItems:"center",
-          borderTopRightRadius:50,
-          borderTopLeftRadius:50
-        }}>
-          <Text>add</Text>
-          <Button title="close" onPress={() => setModalVisible(false)}/>
-        </View>
+          <View style={{
+            width:"100%",
+            height:"40%",
+            backgroundColor:"#fff",
+            justifyContent:"center",
+            alignItems:"center",
+            borderTopRightRadius:50,
+            borderTopLeftRadius:50
+          }}>
+            <Text>add</Text>
+            <Button title="close" onPress={() => 
+              {
+                toggleModal();
+                router.back();
+              }}/>
+          </View>
       </Modal>
     );
 }

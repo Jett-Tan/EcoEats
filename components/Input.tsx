@@ -1,31 +1,46 @@
 import { useState } from "react";
-import { TextInput, View, Text, StyleSheet } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Icon } from "./navigation/Icon";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
-export default function Input(props:{
-    type:"Email" | "Password" | "Phone" | "Name" | "Username" | "Address" | "City" | "State" | "Country",
-    placeholder:string,
-    value:string,
-    onChangeText:Function,
-    error:string,
-    catchError:Function
-}) {
+interface TestProps {
+    type:"Email" | "Password" | "Phone" | "Name" | "Username" | "Address" | "City" | "State" | "Country" | "First Name" | "Last Name" | "Date of Birth" | "Gender",
+    placeholder?:string,
+    value?:string,
+    onChangeText?:Function,
+    error?:String,
+    catchError?:Function,
+    style?:{inputBox:Object, input:Object}
+}
+
+const defaultProps: TestProps = {
+    type:"Email" ,
+    placeholder:"",
+    value:"",
+    onChangeText:(e)=>{console.log("changed")},
+    error:"",
+    catchError:(e) => {console.log("changed")},
+    style:{inputBox:{}, input:{}}
+}
+
+export default function Input(props = defaultProps) {
     const [visible, setVisible] = useState(false);
-    const [error, setError] = useState("");
+
     return (
         <>
             <View style={styles.input_Container}>
                 <Text style={styles.input_Title}>{props.type}</Text>
-                <View style={styles.input_Box} >
+                <View style={[styles.input_Box, props.style?.inputBox]} >
                     <TextInput 
-                        style={styles.input}
+                        style={[styles.input, props.style?.input]}
                         value={props.value} 
                         placeholder={props.placeholder}
                         placeholderTextColor="#A9A9A9"
                         secureTextEntry={props.type === "Password" && !visible}
-                        onChangeText={(e) => props.onChangeText(e)} 
+                        onChangeText={(e) => {
+                            props.onChangeText(e);
+                            props.catchError}} 
                     />
-                    
                     {props.type ==="Password" && <Icon 
                         size={20} 
                         name={visible ? "eye-off-outline" : "eye-outline"} 
