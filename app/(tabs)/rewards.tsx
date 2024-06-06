@@ -1,24 +1,36 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from "react-native";
 
 export default function RewardTab() {
-    return (
-        <View style={styles.container}>
-            <Text>Rewards</Text>
+  return (
+    <View style={styles.rewardsHeader}>
+      <Text style={{ fontSize: 25, fontWeight: "bold", paddingTop: 60 }}>
+        Rewards
+      </Text>
+      <View style={styles.rewardsTab}>
+        <View>
+          <Text>My Wallet</Text>
         </View>
-    );
+        <View>
+          <Text>My Rewards</Text>
+        </View>
+      </View>
+    </View>
+  );
 }
 const styles = StyleSheet.create({
-  container: {
+  rewardsHeader: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ecf0f1',
-    padding: 8,
+    alignItems: "center",
+    backgroundColor: "#ecf0f1",
   },
   paragraph: {
     margin: 24,
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  rewardsTab: {
+    flexDirection: "row",
+    marginTop: 10,
   },
 });
