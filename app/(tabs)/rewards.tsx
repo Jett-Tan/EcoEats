@@ -7,7 +7,7 @@ export default function RewardTab() {
         Rewards
       </Text>
       <View style={styles.rewardsTab}>
-        <View>
+        <View style={{ justifyContent: "center" }}>
           <Text>My Wallet</Text>
         </View>
         <View>
