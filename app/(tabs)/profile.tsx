@@ -1,66 +1,23 @@
 import Input from "@/components/Input";
 import { Icon } from "@/components/navigation/Icon";
 import React, { useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
-import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'; //https://oblador.github.io/react-native-vector-icons/#MaterialIcons
-
-interface Review {
-  name: string;
-  rating: number;
-  comment: string;
-  date: string;
-}
-
-const initialLayout = { width: Dimensions.get('window').width };
-
-const StarRoute = () => (
-  <View style={styles.tabContent}>
-    <Text style={styles.ratingText}> Star</Text>
-  </View>
-);
-
-const BookmarkRoute = () => (
-  <View style={styles.tabContent}>
-    <Text style={styles.ratingText}>Bookmark</Text>
-  </View>
-);
-
-const PrefRoute = () => (
-  <View style={styles.tabContent}>
-    <Text style={styles.ratingText}>Pref</Text>
-  </View>
-);
+import PrefTab from '../prefTab';
+import BookmarkTab from '../savedTab';
+import StarTab from '../starTab';
 
 const ProfilePage: React.FC = () => {
   const [firstName, setFirstName] = useState('John');
   const [lastName, setLastName] = useState('Low');
   const [dob, setDOB] = useState('01/01/2000');
   const [gender, setGender] = useState('Male');
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: 'star'},
-    { key: 'bookmark'},
-    { key: 'pref'},
-  ]);
+  const [activeTab, setActiveTab] = useState('star');
 
-  const renderScene = SceneMap({
-    star: StarRoute,
-    bookmark: BookmarkRoute,
-    pref: PrefRoute,
-  });
-
-  const reviews: Review[] = [
-    { name: 'John Doe', rating: 5, comment: 'Very trustworthy', date: '01-01-2024 01:01' },
-    { name: 'Mei Li', rating: 4.5, comment: '', date: '' },
-  ];
-
-  const colorScheme = useColorScheme();
-
-  const renderIcon = ({ route,focused, color }: { route: { key: string }, focused: boolean, color: string }) => {
+  const renderIcon = (tabKey: string, focused: boolean) => {
     let iconName;
 
-    switch (route.key) {
+    switch (tabKey) {
       case 'star':
         iconName = focused ? 'star' : 'star-outline';
         break;
@@ -71,12 +28,12 @@ const ProfilePage: React.FC = () => {
         iconName = focused ? 'list' : 'list';
         break;
       default:
-        iconName = 'star'; // Default to 'star' to satisfy the type
+        iconName = 'star';
         break;
     }
-    return <MaterialIcons name={iconName} size={24} color={color} />;
+    return <MaterialIcons name={iconName} size={24} color={focused ? 'black' : 'gray'} />;
   };
-  
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.upperBlock}></View>
@@ -139,35 +96,23 @@ const ProfilePage: React.FC = () => {
         />
       </View>
 
-      <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={initialLayout}
-        renderTabBar={props => (
-          <TabBar
-            {...props}
-            renderIcon={renderIcon}
-            indicatorStyle={styles.indicator}
-            style={styles.tabBar}
-            labelStyle={styles.label}
-          />
-        )}
-      />
-
-      <View style={styles.reviews}>
-        {reviews.map((review, index) => (
-          <View key={index} style={styles.reviewCard}>
-            <Text style={styles.reviewName}>{review.name}</Text>
-            <View style={styles.stars}>
-              {[...Array(Math.floor(review.rating))].map((_, i) => (
-                <Text key={i} style={styles.starText}>⭐</Text>
-              ))}
-            </View>
-            <Text style={styles.reviewComment}>{review.comment}</Text>
-            <Text style={styles.reviewDate}>{review.date}</Text>
-          </View>
-        ))}
+      <View style={styles.tabs}>
+        <View style={styles.tabBar}>
+          {['star', 'bookmark', 'pref'].map((tabKey) => (
+            <Text
+              key={tabKey}
+              style={[styles.tabItem, activeTab === tabKey && styles.activeTab]}
+              onPress={() => setActiveTab(tabKey)}
+            >
+              {renderIcon(tabKey, activeTab === tabKey)}
+            </Text>
+          ))}
+        </View>
+        <View style={styles.tabContent}>
+          {activeTab === 'star' && <StarTab />}
+          {activeTab === 'bookmark' && <BookmarkTab />}
+          {activeTab === 'pref' && <PrefTab />}
+        </View>
       </View>
     </ScrollView>
   );
@@ -238,45 +183,28 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'left',
   },
+  tabs: {
+    marginTop: 20,
+  },
   tabBar: {
-    backgroundColor: 'white',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
-  indicator: {
-    backgroundColor: 'black',
+  tabItem: {
+    padding: 10,
+    textAlign: 'center',
   },
-  label: {
-    color: 'black',
-    fontWeight: 'bold',
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: 'black',
   },
   tabContent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-  },
-  reviews: {
-    marginBottom: 20,
-  },
-  reviewCard: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 10,
-    marginBottom: 10,
-  },
-  reviewName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  stars: {
-    flexDirection: 'row',
-  },
-  reviewComment: {
-    fontSize: 14,
-    color: 'gray',
-  },
-  reviewDate: {
-    fontSize: 12,
-    color: 'gray',
   },
 });
 
