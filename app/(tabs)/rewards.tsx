@@ -1,20 +1,29 @@
+import  { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  Animated,
+  Dimensions,
 } from "react-native";
-import { useState } from "react";
 
-
+const { width } = Dimensions.get("window");
 
 export default function RewardTab() {
-
   const [activeTab, setActiveTab] = useState("MyWallet");
+  const slideAnim = useRef(new Animated.Value(0)).current;
 
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: activeTab === "MyWallet" ? 0 : -width,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [activeTab, slideAnim]);
 
-return (
+  return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Rewards</Text>
@@ -38,8 +47,15 @@ return (
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        {activeTab === "MyWallet" && (
-          <>
+        <Animated.View
+          style={[
+            styles.slider,
+            {
+              transform: [{ translateX: slideAnim }],
+            },
+          ]}
+        >
+          <View style={styles.tab}>
             <Text style={styles.pointsText}>My Eco Points:</Text>
             <Text style={styles.pointsValue}>0</Text>
             <TouchableOpacity style={styles.redeemButton}>
@@ -56,13 +72,9 @@ return (
                 </Text>
               </SafeAreaView>
             </View>
-          </>
-        )}
-        {activeTab === "MyRewards" && (
-          <>
-            {/* Add your My Rewards view content here */}
+          </View>
+          <View style={styles.tab}>
             <Text style={styles.pointsText}>My Rewards Content</Text>
-            {/* Example content */}
             <View style={styles.transactionHistory}>
               <Text style={styles.transactionText}>Rewards History</Text>
               <SafeAreaView
@@ -73,8 +85,8 @@ return (
                 </Text>
               </SafeAreaView>
             </View>
-          </>
-        )}
+          </View>
+        </Animated.View>
       </View>
     </View>
   );
@@ -113,10 +125,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#00FF00",
     fontWeight: "bold",
-    // borderBottomColor: "49B379",
-    // borderBottomWidth: 1,
   },
   content: {
+    flex: 1,
+    overflow: "hidden",
+  },
+  slider: {
+    flexDirection: "row",
+    width: width * 2,
+  },
+  tab: {
+    width: width,
     padding: 20,
     alignItems: "center",
   },
