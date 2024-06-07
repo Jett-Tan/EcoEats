@@ -1,7 +1,7 @@
 import Input from "@/components/Input";
 import { Icon } from "@/components/navigation/Icon";
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'; //https://oblador.github.io/react-native-vector-icons/#MaterialIcons
 import PrefTab from '../prefTab';
 import BookmarkTab from '../savedTab';
@@ -35,8 +35,8 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
+    <SafeAreaView style={styles.safeArea}>
     <ScrollView style={styles.container}>
-      <View style={styles.upperBlock}></View>
       <View style={styles.headerRow}>
         <View style={styles.headerRowLeft}>
           <Icon size={90} name="person-circle-sharp" />
@@ -115,15 +115,16 @@ const ProfilePage: React.FC = () => {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     padding: 20,
-  },
-  upperBlock: {
-    padding: 30,
   },
   betweenTextBlock: {
     padding: 10,
@@ -184,7 +185,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   tabs: {
-    marginTop: 20,
+    marginTop: 0,
   },
   tabBar: {
     flexDirection: 'row',
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 5,
   },
 });
 
