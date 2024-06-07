@@ -48,7 +48,7 @@ const ProfilePage: React.FC = () => {
         </View>
       </View>
       <View style={styles.subTitle}>
-        <Text style={styles.subTitleText}>A profile sub title</Text>
+        <Text style={styles.subTitleText}>BrainFried is the best!</Text>
       </View>
       <View style={styles.betweenTextBlock}></View>
       <View style={styles.personalParticulars}>
