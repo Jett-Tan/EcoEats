@@ -1,4 +1,4 @@
-import  { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Animated,
   Dimensions,
+  ScrollView,
 } from "react-native";
 
 const { width } = Dimensions.get("window");
@@ -14,6 +15,7 @@ const { width } = Dimensions.get("window");
 export default function RewardTab() {
   const [activeTab, setActiveTab] = useState("MyWallet");
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -23,6 +25,12 @@ export default function RewardTab() {
     }).start();
   }, [activeTab, slideAnim]);
 
+  const handleScroll = (event) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const currentIndex = Math.round(contentOffsetX / width);
+    setActiveTab(currentIndex === 0 ? "MyWallet" : "MyRewards");
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -30,64 +38,74 @@ export default function RewardTab() {
       </View>
       <View style={styles.navbar}>
         <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab("MyWallet")}
+          style={[
+            styles.navItem,
+            activeTab === "MyWallet" && styles.navItemActive,
+          ]}
+          onPress={() => {
+            setActiveTab("MyWallet");
+            scrollRef.current.scrollTo({ x: 0 });
+          }}
         >
           <Text style={activeTab === "MyWallet" ? styles.navTextActive : styles.navText}>
             My Wallet
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab("MyRewards")}
+          style={[
+            styles.navItem,
+            activeTab === "MyRewards" && styles.navItemActive,
+          ]}
+          onPress={() => {
+            setActiveTab("MyRewards");
+            scrollRef.current.scrollTo({ x: width });
+          }}
         >
           <Text style={activeTab === "MyRewards" ? styles.navTextActive : styles.navText}>
             My Rewards
           </Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.content}>
-        <Animated.View
-          style={[
-            styles.slider,
-            {
-              transform: [{ translateX: slideAnim }],
-            },
-          ]}
-        >
-          <View style={styles.tab}>
-            <Text style={styles.pointsText}>My Eco Points:</Text>
-            <Text style={styles.pointsValue}>0</Text>
-            <TouchableOpacity style={styles.redeemButton}>
-              <Text style={styles.redeemButtonText}>Redeem Now</Text>
-            </TouchableOpacity>
-            <Text style={styles.expiryText}>No Eco Points expiring yet.</Text>
-            <View style={styles.transactionHistory}>
-              <Text style={styles.transactionText}>Transaction History</Text>
-              <SafeAreaView
-                style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-              >
-                <Text style={styles.noTransactionText}>
-                  You have no recent transaction.
-                </Text>
-              </SafeAreaView>
-            </View>
+      <ScrollView
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        ref={scrollRef}
+      >
+        <View style={styles.tab}>
+          <Text style={styles.pointsText}>My Eco Points:</Text>
+          <Text style={styles.pointsValue}>0</Text>
+          <TouchableOpacity style={styles.redeemButton}>
+            <Text style={styles.redeemButtonText}>Redeem Now</Text>
+          </TouchableOpacity>
+          <Text style={styles.expiryText}>No Eco Points expiring yet.</Text>
+          <View style={styles.transactionHistory}>
+            <Text style={styles.transactionText}>Transaction History</Text>
+            <SafeAreaView
+              style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            >
+              <Text style={styles.noTransactionText}>
+                You have no recent transaction.
+              </Text>
+            </SafeAreaView>
           </View>
-          <View style={styles.tab}>
-            <Text style={styles.pointsText}>My Rewards Content</Text>
-            <View style={styles.transactionHistory}>
-              <Text style={styles.transactionText}>Rewards History</Text>
-              <SafeAreaView
-                style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-              >
-                <Text style={styles.noTransactionText}>
-                  You have no rewards history yet.
-                </Text>
-              </SafeAreaView>
-            </View>
+        </View>
+        <View style={styles.tab}>
+          <Text style={styles.pointsText}>My Rewards Content</Text>
+          <View style={styles.transactionHistory}>
+            <Text style={styles.transactionText}>Rewards History</Text>
+            <SafeAreaView
+              style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            >
+              <Text style={styles.noTransactionText}>
+                You have no rewards history yet.
+              </Text>
+            </SafeAreaView>
           </View>
-        </Animated.View>
-      </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -116,6 +134,11 @@ const styles = StyleSheet.create({
   },
   navItem: {
     padding: 10,
+    alignItems: "center",
+  },
+  navItemActive: {
+    borderBottomWidth: 2,
+    borderBottomColor: "#00FF00",
   },
   navText: {
     fontSize: 16,
