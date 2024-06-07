@@ -1,34 +1,9 @@
-// import { View, Text, StyleSheet } from 'react-native';
-
-// export default function ProfileTab() {
-//     return (
-//         <View style={styles.container}>
-//             <Text>Profile</Text>
-//         </View>
-//     );
-// }
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: '#ecf0f1',
-//     padding: 8,
-//   },
-//   paragraph: {
-//     margin: 24,
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     textAlign: 'center',
-//   },
-// });
-
-// src/components/ProfilePage.tsx
-// src/components/ProfilePage.tsx
 import Input from "@/components/Input";
 import { Icon } from "@/components/navigation/Icon";
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'; //https://oblador.github.io/react-native-vector-icons/#MaterialIcons
 
 interface Review {
   name: string;
@@ -37,34 +12,86 @@ interface Review {
   date: string;
 }
 
-const [firstName, setFirstName] = useState('John');
-const [lastName, setLastName] = useState('Low');
-const [dob, setDOB] = useState('01/01/2000');
-const [gender, setGender] = useState('Male');
+const initialLayout = { width: Dimensions.get('window').width };
 
-const reviews: Review[] = [
-  { name: 'John Doe', rating: 5, comment: 'Very trustworthy', date: '01-01-2024 01:01' },
-  { name: 'Mei Li', rating: 4.5, comment: '', date: '' },
-];
+const StarRoute = () => (
+  <View style={styles.tabContent}>
+    <Text style={styles.ratingText}> Star</Text>
+  </View>
+);
+
+const BookmarkRoute = () => (
+  <View style={styles.tabContent}>
+    <Text style={styles.ratingText}>Bookmark</Text>
+  </View>
+);
+
+const PrefRoute = () => (
+  <View style={styles.tabContent}>
+    <Text style={styles.ratingText}>Pref</Text>
+  </View>
+);
 
 const ProfilePage: React.FC = () => {
+  const [firstName, setFirstName] = useState('John');
+  const [lastName, setLastName] = useState('Low');
+  const [dob, setDOB] = useState('01/01/2000');
+  const [gender, setGender] = useState('Male');
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: 'star'},
+    { key: 'bookmark'},
+    { key: 'pref'},
+  ]);
+
+  const renderScene = SceneMap({
+    star: StarRoute,
+    bookmark: BookmarkRoute,
+    pref: PrefRoute,
+  });
+
+  const reviews: Review[] = [
+    { name: 'John Doe', rating: 5, comment: 'Very trustworthy', date: '01-01-2024 01:01' },
+    { name: 'Mei Li', rating: 4.5, comment: '', date: '' },
+  ];
+
+  const colorScheme = useColorScheme();
+
+  const renderIcon = ({ route,focused, color }: { route: { key: string }, focused: boolean, color: string }) => {
+    let iconName;
+
+    switch (route.key) {
+      case 'star':
+        iconName = focused ? 'star' : 'star-outline';
+        break;
+      case 'bookmark':
+        iconName = focused ? 'bookmark' : 'bookmark-outline';
+        break;
+      case 'pref':
+        iconName = focused ? 'list' : 'list';
+        break;
+      default:
+        iconName = 'star'; // Default to 'star' to satisfy the type
+        break;
+    }
+    return <MaterialIcons name={iconName} size={24} color={color} />;
+  };
+  
   return (
     <ScrollView style={styles.container}>
       <View style={styles.upperBlock}></View>
       <View style={styles.headerRow}>
-
         <View style={styles.headerRowLeft}>
           <Icon size={90} name="person-circle-sharp" />
           <Text style={styles.headerText}>John Low</Text>
         </View>
-
         <View style={styles.rating}>
           <Text style={styles.ratingText}>5.0</Text>
           <Text style={styles.starText}>⭐</Text>
         </View>
       </View>
       <View style={styles.subTitle}>
-        <Text style={styles.subTitleText}>An profile sub title</Text>
+        <Text style={styles.subTitleText}>A profile sub title</Text>
       </View>
       <View style={styles.betweenTextBlock}></View>
       <View style={styles.personalParticulars}>
@@ -111,6 +138,23 @@ const ProfilePage: React.FC = () => {
           }}
         />
       </View>
+
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={initialLayout}
+        renderTabBar={props => (
+          <TabBar
+            {...props}
+            renderIcon={renderIcon}
+            indicatorStyle={styles.indicator}
+            style={styles.tabBar}
+            labelStyle={styles.label}
+          />
+        )}
+      />
+
       <View style={styles.reviews}>
         {reviews.map((review, index) => (
           <View key={index} style={styles.reviewCard}>
@@ -133,17 +177,11 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
   },
-  containerLeft: {
-    textAlign: 'left',
-  },
   upperBlock: {
     padding: 30,
   },
   betweenTextBlock: {
     padding: 10,
-  },
-  betweenInputBlock: {
-    padding: 5,
   },
   headerRow: {
     flexDirection: 'row',
@@ -153,10 +191,6 @@ const styles = StyleSheet.create({
   headerRowLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  profileHeader: {
-    textAlign: 'center',
-    marginBottom: 20,
   },
   headerText: {
     fontSize: 24,
@@ -190,22 +224,10 @@ const styles = StyleSheet.create({
   personalParticulars: {
     marginBottom: 20,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
   personalParticularsTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-  },
-  field: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 5,
-  },
-  label: {
-    fontSize: 16,
   },
   input: {
     borderWidth: 1,
@@ -216,11 +238,21 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'left',
   },
-  profileIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 10,
+  tabBar: {
+    backgroundColor: 'white',
+  },
+  indicator: {
+    backgroundColor: 'black',
+  },
+  label: {
+    color: 'black',
+    fontWeight: 'bold',
+  },
+  tabContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
   reviews: {
     marginBottom: 20,
@@ -245,17 +277,6 @@ const styles = StyleSheet.create({
   reviewDate: {
     fontSize: 12,
     color: 'gray',
-  },
-  nav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderColor: '#ddd',
-  },
-  navLink: {
-    fontSize: 16,
-    color: 'blue',
   },
 });
 
