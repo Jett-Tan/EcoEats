@@ -5,42 +5,81 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
+import { useState } from "react";
+
+
 
 export default function RewardTab() {
-  return (
+
+  const [activeTab, setActiveTab] = useState("MyWallet");
+
+
+return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Rewards</Text>
       </View>
       <View style={styles.navbar}>
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navTextActive}>My Wallet</Text>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => setActiveTab("MyWallet")}
+        >
+          <Text style={activeTab === "MyWallet" ? styles.navTextActive : styles.navText}>
+            My Wallet
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navText}>My Rewards</Text>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => setActiveTab("MyRewards")}
+        >
+          <Text style={activeTab === "MyRewards" ? styles.navTextActive : styles.navText}>
+            My Rewards
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        <Text style={styles.pointsText}>My Eco Points:</Text>
-        <Text style={styles.pointsValue}>0</Text>
-        <TouchableOpacity style={styles.redeemButton}>
-          <Text style={styles.redeemButtonText}>Redeem Now</Text>
-        </TouchableOpacity>
-        <Text style={styles.expiryText}>No Eco Points expiring yet.</Text>
-        <View style={styles.transactionHistory}>
-          <Text style={styles.transactionText}>Transaction History</Text>
-          <SafeAreaView
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
-            <Text style={styles.noTransactionText}>
-              You have no recent transaction.
-            </Text>
-          </SafeAreaView>
-        </View>
+        {activeTab === "MyWallet" && (
+          <>
+            <Text style={styles.pointsText}>My Eco Points:</Text>
+            <Text style={styles.pointsValue}>0</Text>
+            <TouchableOpacity style={styles.redeemButton}>
+              <Text style={styles.redeemButtonText}>Redeem Now</Text>
+            </TouchableOpacity>
+            <Text style={styles.expiryText}>No Eco Points expiring yet.</Text>
+            <View style={styles.transactionHistory}>
+              <Text style={styles.transactionText}>Transaction History</Text>
+              <SafeAreaView
+                style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+              >
+                <Text style={styles.noTransactionText}>
+                  You have no recent transaction.
+                </Text>
+              </SafeAreaView>
+            </View>
+          </>
+        )}
+        {activeTab === "MyRewards" && (
+          <>
+            {/* Add your My Rewards view content here */}
+            <Text style={styles.pointsText}>My Rewards Content</Text>
+            {/* Example content */}
+            <View style={styles.transactionHistory}>
+              <Text style={styles.transactionText}>Rewards History</Text>
+              <SafeAreaView
+                style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+              >
+                <Text style={styles.noTransactionText}>
+                  You have no rewards history yet.
+                </Text>
+              </SafeAreaView>
+            </View>
+          </>
+        )}
       </View>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -83,7 +122,7 @@ const styles = StyleSheet.create({
   },
   pointsText: {
     fontSize: 18,
-    fontWeight:"bold",
+    fontWeight: "bold",
   },
   pointsValue: {
     fontSize: 48,
