@@ -60,7 +60,7 @@ export default function ShareLocation() {
     return (
         <View style={styles.container}>
             <View style={styles.navigation}>
-                <PressableIcon onPress={() => {router.back()}} size={30} name="arrow-back-outline" />
+                <PressableIcon onPress={() => {router.canGoBack() ? router.back(): {}}} size={30} name="arrow-back-outline" />
             </View>
             <View style={[styles.navigation,{marginTop:110,width:"100%",alignItems:"center", flexDirection:"column"}]}>
                 <Text style={[styles.paragraph_Bold,{alignSelf:"flex-start",marginLeft:30}]}>Set your location</Text>
