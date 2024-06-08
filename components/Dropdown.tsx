@@ -3,6 +3,7 @@ import { Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-na
 import { Icon } from "./navigation/Icon";
 import moment from "moment";  
 import { SelectList } from 'react-native-dropdown-select-list'
+import { onValue } from "firebase/database";
 
 interface TestProps {
     type:"Gender",
@@ -16,28 +17,34 @@ const defaultProps: TestProps = {
     type:"Gender" ,
     placeholder:"",
     value:"",
-    onChangeText:(e: any)=>{console.log(e,"changed")},
+
     style:{inputBox:{}, input:{}}
 }
 
 
 
 export default function DropdownInput(this: any, props = defaultProps) {    
-    const [selected, setSelected] = useState("");
-  
-  const data = [
-      {key:'1', value:'Male'},
-      {key:'2', value:'Female'},
-      {key:'3', value:'Others'},
-  ]
+    const [selected, setSelected] = useState(props.value);
+
+    const data = [
+        {key:'1', value:'Male'},
+        {key:'2', value:'Female'},
+        {key:'3', value:'Others'},
+    ]
     return (
         <>
             <View style={styles.input_Container}>
                 <Text style={styles.input_Title}>Gender</Text>
                 <View style={[styles.input_Box, props.style?.inputBox]} > 
                     <SelectList 
-                        onSelect={() => console.log(selected)}
-                        setSelected={(val: any) => setSelected(val)} 
+                        onSelect={() => {
+                            console.log(selected); 
+                            props.onChangeText && props.onChangeText(selected)
+                            console.log(props.onChangeText && props.onChangeText(selected));
+                            
+                        }}
+                        
+                        setSelected={(val: any) => {setSelected(val); props.onChangeText && props.onChangeText(val)}} 
                         data={data} 
                         search={false}
                         boxStyles={[styles.input,{borderWidth:0, margin:0,padding:0}]} //override default styles

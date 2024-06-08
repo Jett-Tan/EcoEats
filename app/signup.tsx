@@ -48,7 +48,7 @@ export default function Index() {
                 value={email} 
                 onChangeText={setEmail} 
                 error={emailError} 
-                catchError={setEmailError}
+                catchError={(e:string) => {e.includes("@") && e.includes(".") ? setEmailError('') : setEmailError("Please enter a valid email")}}
             />
             <Input 
                 type="Password" 
@@ -56,7 +56,7 @@ export default function Index() {
                 value={password} 
                 onChangeText={setPassword} 
                 error={passwordError} 
-                catchError={setPasswordError}
+                catchError={(e:string) => {e.length < 6 ? setPasswordError("Password must be at least 6 characters") : setPasswordError('')}}
             />
             <Pressable onPress={handleSignup}>
                 <View style={styles.button}>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-export default function Interests() {
+export default function Interests( props: {interests: {key:number,name:string,selected:boolean}[], setInterests:Function}) {
     const [interests, setInterests] = useState([
         {key:1,name: "🍞 Bakeries", selected: false},
         {key:2,name: "🥦 Groceries", selected: false},
@@ -21,12 +21,16 @@ export default function Interests() {
             <View style={{marginTop:50,marginBottom:150,flexDirection:"row", flexWrap:"wrap", width:350}}>
                 {interests.map((interest) => {
                     return (
-                        <TouchableOpacity key={interest.key} onPress={() => {interest.selected = !interest.selected; setInterests([...interests])}}>
-                        <View 
-                            style={[{flexDirection:"row",justifyContent:"center",alignItems:"center",margin:10,borderColor:"lightgrey",borderRadius:5,borderWidth:1,padding:4},
-                            interest.selected ? {borderColor:"green"} : {}]}>
-                            <Text>{interest.name}</Text>
-                        </View>
+                        <TouchableOpacity key={interest.key} onPress={() => {
+                            interest.selected = !interest.selected; 
+                            setInterests([...interests]);
+                            props.setInterests([...interests]);
+                        }}>
+                            <View 
+                                style={[{flexDirection:"row",justifyContent:"center",alignItems:"center",margin:10,borderColor:"lightgrey",borderRadius:5,borderWidth:1,padding:4},
+                                interest.selected ? {borderColor:"green"} : {}]}>
+                                <Text>{interest.name}</Text>
+                            </View>
                         </TouchableOpacity>
                     )
                 })}

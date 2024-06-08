@@ -1,11 +1,14 @@
-import Input from "@/components/Input";
-import { Icon } from "@/components/navigation/Icon";
 import React, { useState } from 'react';
+import { getDatabase, ref, get, set } from "firebase/database";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'; //https://oblador.github.io/react-native-vector-icons/#MaterialIcons
+
+import { Icon } from "@/components/navigation/Icon";
+import Input from "@/components/Input";
 import PrefTab from '../prefTab';
 import BookmarkTab from '../savedTab';
 import StarTab from '../starTab';
+import { auth } from '@/components/auth/firebaseConfig';
 
 const ProfilePage: React.FC = () => {
   const [firstName, setFirstName] = useState('John');
@@ -13,6 +16,30 @@ const ProfilePage: React.FC = () => {
   const [dob, setDOB] = useState('01/01/2000');
   const [gender, setGender] = useState('Male');
   const [activeTab, setActiveTab] = useState('star');
+  
+  const db = getDatabase();
+  get(ref(db, `users/`+ auth.currentUser?.uid)).then((snapshot) => {
+  if (snapshot.exists()) {
+      console.log(snapshot.val());
+      setFirstName(snapshot.val().firstName);
+      setLastName(snapshot.val().lastName);
+      setDOB(snapshot.val().dob);
+      setGender(snapshot.val().gender);
+  } else {
+      console.log("No data available");
+  }
+  }).catch((error) => {
+      console.error("error", error);
+  });
+
+  function writeUserData() {
+    set(ref(db, 'users/' + auth.currentUser?.uid), {
+      firstName: firstName,
+      lastName:lastName,
+      dob: dob,
+      gender:gender,
+    });
+  }
 
   const renderIcon = (tabKey: string, focused: boolean) => {
     let iconName;
@@ -40,7 +67,7 @@ const ProfilePage: React.FC = () => {
       <View style={styles.headerRow}>
         <View style={styles.headerRowLeft}>
           <Icon size={90} name="person-circle-sharp" />
-          <Text style={styles.headerText}>John Low</Text>
+          <Text style={styles.headerText}>{firstName} {lastName}</Text>
         </View>
         <View style={styles.rating}>
           <Text style={styles.ratingText}>5.0</Text>

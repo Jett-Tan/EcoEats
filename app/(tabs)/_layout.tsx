@@ -1,12 +1,17 @@
-import { Tabs, Stack, Navigator, useRootNavigationState } from 'expo-router';
+import { Tabs, Stack, Navigator, useRootNavigationState, Redirect } from 'expo-router';
 import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { auth } from '@/components/auth/firebaseConfig';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
+  if (!auth.currentUser) {
+    return (
+      <Redirect href="/"/>
+    );
+  }
   return (
     <Tabs
       screenOptions={{

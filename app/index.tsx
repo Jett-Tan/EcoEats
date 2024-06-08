@@ -1,26 +1,28 @@
-import { Text, View, StyleSheet, Image } from "react-native";
+import { Text, View, StyleSheet, Image, Platform } from "react-native";
 import { Link, Redirect, useRouter } from 'expo-router';
 
 import CustomButton from "../components/CustomButton";
+import { auth } from "@/components/auth/firebaseConfig";
 
 export default function Index() {
-    const router = useRouter();
-    const isSkip = true;
-    async function onGoogleButtonPress() {
-      
-    }
+  const router = useRouter();
+  const isSkip = false;
+  
+  const check = setInterval(() => {
+    auth.currentUser && router.push('/(tabs)/home') ;
+  },100)
+  setTimeout(() => {clearInterval(check)}, 1000);
 
   return (
-    
     <View style={styles.container}>
           {/* TODO:: add Icon of the app and create multiple links for login*/}
           <View style={styles.icon}>
             <Image style={{width:381, height: 152}} source={require('../assets/images/icon.jpg')} />
           </View>
-          <CustomButton text="Continue with" type="Google" onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}/>
-          <CustomButton text="Continue with" type="Facebook" onPress={()=>{}} />
-          <CustomButton text="Continue with" type="Apple" onPress={()=>{}}/>
-          <CustomButton text="Continue with" type="Email" onPress={()=>{router.replace('login')}}/>
+          <CustomButton text="Continue with " type="Google" onPress={() => {}}/>
+          <CustomButton text="Continue with " type="Facebook" onPress={()=>{}} />
+          {Platform.OS === "ios" && <CustomButton text="Continue with " type="Apple" onPress={()=>{}}/>}
+          <CustomButton text="Continue with " type="Email" onPress={()=>{router.push('login')}}/>
           <Text style={styles.paragraph_Box}>
               <Text style={styles.paragraph}>By signing up, you agree to our </Text>
               <Text style={[styles.paragraph,styles.paragraph_Bold]}>Terms of Service</Text> 

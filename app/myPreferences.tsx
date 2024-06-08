@@ -1,20 +1,36 @@
 import { Text, View, StyleSheet, Image, Pressable } from "react-native";
 import { Link, useRouter} from 'expo-router';
 import { useState } from "react";
+import { getDatabase, ref, set, child, get  } from "firebase/database";
 
 import { Icon } from "@/components/navigation/Icon";
 import Input from "@/components/Input";
 import CustomButton from "@/components/CustomButton";
 import { PressableIcon } from "@/components/navigation/PressableIcon";
 import Interests from "@/components/Interests";
+import { auth } from "@/components/auth/firebaseConfig";
 
 export default function Index() {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [dob, setDob] = useState("");
-    const [gender, setGender] = useState("");
+    const [myPreferences, setMyPreferences] = useState([]);
+    const [name, setName] = useState('');
     const router = useRouter();
-    
+
+    const db = getDatabase();
+    function writeUserData() {
+        set(ref(db, 'users/' + auth.currentUser?.uid + '/myPreferences'), {
+            myPreferences,
+        });
+    }
+    get(ref(db, `users/`+ auth.currentUser?.uid)).then((snapshot) => {
+    if (snapshot.exists()) {
+        console.log(snapshot.val());
+        setName(snapshot.val().firstName);
+    } else {
+        console.log("No data available");
+    }
+    }).catch((error) => {
+        console.error("error", error);
+    });
     return (
         <View style={styles.container}>
             <View style={styles.navigation}>
@@ -31,15 +47,18 @@ export default function Index() {
                 <Text style={{textAlign:"center",fontSize:16, fontWeight:"bold"}}>My Preferences</Text>
             </View>
             <View style={{marginTop:50,width:300}}>
-                <Text>Hi John</Text>
+                <Text>Hi {name}</Text>
                 <Text style={{opacity:0.5}}>Choose a few categories to get started</Text>
             </View>
-            <Interests/>
+            <Interests setInterests={setMyPreferences} interests={myPreferences}/>
             <View style={{position:"absolute",marginBottom:100,left:0,bottom:0,marginLeft:7,width:"100%",alignItems:"center"}}>
                 <CustomButton 
                 text="Add Now"
                 type=""
-                onPress={() => {router.push("./shareLocation")}}
+                onPress={() => {
+                    writeUserData();
+                    router.push("./shareLocation")
+                }}
                 style={{buttonContainer: {backgroundColor:"#3BAE6F"},button: {},text: styles.button_Text}}
                 />
             </View>

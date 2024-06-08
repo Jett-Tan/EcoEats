@@ -6,16 +6,18 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Input from "@/components/Input";
 import { auth } from "@/components/auth/firebaseConfig";
 import { Icon } from "@/components/navigation/Icon";
-
+import CustomButton from '@/components/CustomButton';
 export default function Index() {
     const[email, setEmail] = useState('');
     const[emailError, setEmailError] = useState('');
     const[password, setPassword] = useState('');
     const[passwordError, setPasswordError] = useState(''); 
+    const[loginError, setLoginError] = useState(''); 
     
     const router = useRouter();
     
     const handleLogin = () => {
+        setLoginError('');
         signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
@@ -29,6 +31,7 @@ export default function Index() {
             console.log('====================================');
             console.log('Error Code:', errorCode);
             console.log('Error Message:', errorMessage);
+            setLoginError(errorCode);
             console.log('====================================');
         })
     }
@@ -47,25 +50,16 @@ export default function Index() {
                 placeholder="Enter your Email" 
                 value={email} 
                 onChangeText={setEmail} 
-                error={emailError} 
-                catchError={setEmailError}
-                style={styles.input}
             />
             <Input 
                 type="Password" 
                 placeholder="Enter your Password" 
                 value={password} 
                 onChangeText={setPassword} 
-                error={passwordError} 
-                catchError={setPasswordError}
-                style={styles.input}
             />
-            <Pressable onPress={handleLogin}>
-                <View style={styles.button}>
-                    <Text style={styles.button_Text}>Login</Text>
-                </View>
-            </Pressable>
-            <Text style={styles.paragraph_Box}>
+            <CustomButton text="Login" style={{buttonContainer: styles.button,button: {},text: styles.button_Text}} type="" onPress={handleLogin}/>
+            {loginError && <Text style={{color:"red", fontSize:12}}>{loginError}</Text>}
+            <Text style={[styles.paragraph_Box,{marginTop:24}]}>
                 <Text style={styles.paragraph}>By signing up, you agree to our </Text>
                 <Text style={[styles.paragraph,styles.paragraph_Bold]}>Terms of Service</Text> 
                 <Text style={styles.paragraph}> and </Text> 
@@ -86,7 +80,7 @@ const styles = StyleSheet.create({
         maxWidth:383,
         minWidth:300,
         alignItems:"center",
-        marginBottom:24,
+        marginBottom:0,
         shadowColor: "#000",
         shadowOpacity: 0.25,
         shadowOffset: {
@@ -115,7 +109,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 87,
         overflow: "hidden",
-        marginBottom: 200,
+        marginBottom: 150,
         marginTop: 50,
     },
     paragraph_Box:{

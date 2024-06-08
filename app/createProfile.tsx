@@ -2,12 +2,14 @@ import { Text, View, StyleSheet, Image, Pressable } from "react-native";
 import { Link, useRouter} from 'expo-router';
 import { useState } from "react";
 import moment from "moment";
+import { getDatabase, ref, set } from "firebase/database";
 
 import { Icon } from "@/components/navigation/Icon";
 import Input from "@/components/Input";
 import CustomButton from "@/components/CustomButton";
 import { PressableIcon } from "@/components/navigation/PressableIcon";
 import DropdownInput from "@/components/Dropdown";
+import { auth, database } from "@/components/auth/firebaseConfig";
 
 export default function Index() {
     const [firstName, setFirstName] = useState("");
@@ -16,7 +18,16 @@ export default function Index() {
     const [dobError, setDobError] = useState('');
     const [gender, setGender] = useState("");
     const router = useRouter();
-    
+
+    function writeUserData() {
+        const db = getDatabase();
+        set(ref(db, 'users/' + auth.currentUser?.uid), {
+            firstName: firstName,
+            lastName:lastName,
+            dob: dob,
+            gender:gender,
+        });
+    }
     return (
         <View style={styles.container}>
             <View style={styles.navigation}>
@@ -56,23 +67,25 @@ export default function Index() {
                     }}
                     header={true}
                 />
-                {/* <Input
+                <Input
                     type="Gender" //"gender"
                     placeholder="Enter Gender"
                     value={gender}
                     onChangeText={setGender}
-                /> */}
-                <DropdownInput 
+                    header={true}
+                />
+                {/* <DropdownInput 
                     type="Gender"
                     value={gender}
-                    onChangeText={setGender}
-                />
+                    onChangeText={(e:string) => {console.log("ASD"); setGender(e); return e}}
+                /> */}
             </View>
             <View style={{position:"absolute",marginBottom:100,left:0,bottom:0,width:"100%",marginLeft:7,alignItems:"center",}}>
                 <CustomButton 
                 text="Get Started! "
                 type=""
                 onPress={() => {
+                    writeUserData();
                     router.push("./myPreferences")
                 }}
                 style={{buttonContainer: {backgroundColor:"#3BAE6F"},button: {},text: styles.button_Text}}

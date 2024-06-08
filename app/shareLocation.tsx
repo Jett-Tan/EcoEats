@@ -2,15 +2,29 @@ import { View, Text ,StyleSheet} from "react-native"
 import { Link, useRouter} from 'expo-router';
 import { useState, useEffect } from "react";
 import * as Location from 'expo-location';
+import { getDatabase, ref, get } from "firebase/database";
 
 import CustomButton from "@/components/CustomButton";
 import { PressableIcon } from "@/components/navigation/PressableIcon";
 import { Icon } from "@/components/navigation/Icon";
+import { auth } from "@/components/auth/firebaseConfig";
 
 export default function ShareLocation() {
     const router = useRouter();
+    const [name, setName] = useState('');
     const [errorMsg, setErrorMsg] = useState("");
     
+    const db = getDatabase();
+    get(ref(db, `users/`+ auth.currentUser?.uid)).then((snapshot) => {
+    if (snapshot.exists()) {
+        console.log(snapshot.val());
+        setName(snapshot.val().firstName);
+    } else {
+        console.log("No data available");
+    }
+    }).catch((error) => {
+        console.error("error", error);
+    });
     const onClickNext = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
@@ -28,7 +42,7 @@ export default function ShareLocation() {
             </View>
             <Icon size={100} name="location-sharp" style={{color:"#4BB49D"}}/>
             <Text style={styles.paragraph_Box}>
-                <Text style={styles.paragraph_Bold}>Hi, John!</Text>
+                <Text style={styles.paragraph_Bold}>Hi, {name}!</Text>
             </Text>
             <Text style={styles.paragraph_Box}>
                 <Text style={styles.paragraph_Bold}>Before you can share your bites, we need to know your location</Text>

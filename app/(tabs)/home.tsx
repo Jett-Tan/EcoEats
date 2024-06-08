@@ -1,6 +1,8 @@
+import { auth } from '@/components/auth/firebaseConfig';
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function HomeTab() {
+  // auth.signOut();
     return (
         <View style={styles.container}>
             <Text>Home</Text>
