@@ -1,12 +1,13 @@
 import { Text, View, StyleSheet, Image, Pressable } from "react-native";
 import { Link, useRouter} from 'expo-router';
 import { useState } from "react";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import moment from "moment";
 
 import { Icon } from "@/components/navigation/Icon";
 import Input from "@/components/Input";
 import CustomButton from "@/components/CustomButton";
 import { PressableIcon } from "@/components/navigation/PressableIcon";
+import DropdownInput from "@/components/Dropdown";
 
 export default function Index() {
     const [firstName, setFirstName] = useState("");
@@ -19,44 +20,64 @@ export default function Index() {
     return (
         <View style={styles.container}>
             <View style={styles.navigation}>
-                <PressableIcon onPress={() => {router.push("./")}} size={30} name="arrow-back-outline" />
+                <PressableIcon onPress={() => {router.canGoBack()?router.back():{}}} size={30} name="arrow-back-outline" />
             </View>
-            <View style={{alignItems:"center"}}>
+            <View style={{alignItems:"center",marginBottom:50}}>
                 <Icon size={150} name="add-circle-sharp" color={"#D9D9D9"}/>
                 <Text style={{fontSize:20, fontWeight:"bold"}}>Personal Particulars</Text>
             </View>
-            <View style={{}}>
+            <View style={{marginBottom:100}}>
                 <Input
-                    type="Email" //"first Name"
+                    type="First Name" //"first Name"
                     placeholder="Enter First Name"
                     value={firstName}
                     onChangeText={setFirstName}
+                    header={true}
                 />
                 <Input
-                    type="Email" //"lastName"
+                    type="Last Name" //"lastName"
                     placeholder="Enter Last Name"
                     value={lastName}
                     onChangeText={setLastName}
+                    header={true}
                 />
                 <Input
                     type="Date of Birth" //"dob"
                     placeholder="DD/MM/YYYY"
                     value={dob}
-                    onChangeText={setDob}
+                    onChangeText={(e:any) => {setDob(e)}}
+                    error={dobError}
+                    catchError={(e:any ) => {
+                        if(!moment(e, "DD/MM/YYYY", true).isValid()){
+                            setDobError("Invalid Date Format");
+                        }else{
+                            setDobError('')
+                        }
+                    }}
+                    header={true}
                 />
-                <Input
-                    type="Email" //"gender"
+                {/* <Input
+                    type="Gender" //"gender"
                     placeholder="Enter Gender"
+                    value={gender}
+                    onChangeText={setGender}
+                /> */}
+                <DropdownInput 
+                    type="Gender"
                     value={gender}
                     onChangeText={setGender}
                 />
             </View>
-            <CustomButton 
-            text="Get Started! "
-            type=""
-            onPress={() => {router.replace("./myPreferences")}}
-            style={{buttonContainer: {backgroundColor:"#3BAE6F"},button: {},text: styles.button_Text}}
-            />
+            <View style={{position:"absolute",marginBottom:100,left:0,bottom:0,width:"100%",marginLeft:7,alignItems:"center",}}>
+                <CustomButton 
+                text="Get Started! "
+                type=""
+                onPress={() => {
+                    router.push("./myPreferences")
+                }}
+                style={{buttonContainer: {backgroundColor:"#3BAE6F"},button: {},text: styles.button_Text}}
+                />
+            </View>
         </View>
     );
 }

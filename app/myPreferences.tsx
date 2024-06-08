@@ -6,6 +6,7 @@ import { Icon } from "@/components/navigation/Icon";
 import Input from "@/components/Input";
 import CustomButton from "@/components/CustomButton";
 import { PressableIcon } from "@/components/navigation/PressableIcon";
+import Interests from "@/components/Interests";
 
 export default function Index() {
     const [firstName, setFirstName] = useState("");
@@ -17,47 +18,31 @@ export default function Index() {
     return (
         <View style={styles.container}>
             <View style={styles.navigation}>
-                <PressableIcon onPress={() => {router.push("./")}} size={30} name="arrow-back-outline" />
+                <PressableIcon onPress={() => {router.canGoBack()? router.back(): {}}} size={30} name="arrow-back-outline" />
             </View>
             <View style={{alignItems:"center",position: "absolute",
-        top: 0,
-        left: 0,
-        marginLeft:"35%",
-        width:"30%",
-        marginTop:70,
-        height:30,
-        justifyContent:"center"}}>
+                top: 0,
+                left: 0,
+                marginLeft:"35%",
+                width:"30%",
+                marginTop:70,
+                height:30,
+                justifyContent:"center"}}>
                 <Text style={{textAlign:"center",fontSize:16, fontWeight:"bold"}}>My Preferences</Text>
             </View>
-
             <View style={{marginTop:50,width:300}}>
                 <Text>Hi John</Text>
                 <Text style={{opacity:0.5}}>Choose a few categories to get started</Text>
             </View>
-                <View style={{marginTop:50,marginBottom:150,flexDirection:"row", flexWrap:"wrap", width:350}}>
-                    <View style={{flexDirection:"row",justifyContent:"center",alignItems:"center",margin:10,borderRadius:5,borderWidth:1,padding:4}}>
-                        <Icon size={10} name="add-circle-sharp" color={"#D9D9D9"}/>
-                        <Text>Backeries</Text>
-                    </View>
-                    <View style={{flexDirection:"row",justifyContent:"center",alignItems:"center",margin:10,borderRadius:5,borderWidth:1,padding:4}}>
-                        <Icon size={10} name="add-circle-sharp" color={"#D9D9D9"}/>
-                        <Text>Groceries</Text>
-                    </View>
-                    <View style={{flexDirection:"row",justifyContent:"center",alignItems:"center",margin:10,borderRadius:5,borderWidth:1,padding:4}}>
-                        <Icon size={10} name="add-circle-sharp" color={"#D9D9D9"}/>
-                        <Text>Groceasdasdasdries</Text>
-                    </View>
-                    <View style={{flexDirection:"row",justifyContent:"center",alignItems:"center",margin:10,borderRadius:5,borderWidth:1,padding:4}}>
-                        <Icon size={10} name="add-circle-sharp" color={"#D9D9D9"}/>
-                        <Text>Groceries</Text>
-                    </View>
-                </View>
-            <CustomButton 
-            text="Add Now"
-            type=""
-            onPress={() => {router.push("./myPrefernces")}}
-            style={{buttonContainer: {backgroundColor:"#3BAE6F"},button: {},text: styles.button_Text}}
-            />
+            <Interests/>
+            <View style={{position:"absolute",marginBottom:100,left:0,bottom:0,marginLeft:7,width:"100%",alignItems:"center"}}>
+                <CustomButton 
+                text="Add Now"
+                type=""
+                onPress={() => {router.push("./shareLocation")}}
+                style={{buttonContainer: {backgroundColor:"#3BAE6F"},button: {},text: styles.button_Text}}
+                />
+            </View>
         </View>
     );
 }

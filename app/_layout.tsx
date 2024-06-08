@@ -12,6 +12,8 @@ export default function RootLayout() {
     <Stack.Screen name="login" options={{ headerShown: false }}/>
     <Stack.Screen name="createProfile" options={{ headerShown: false }}/>
     <Stack.Screen name="myPreferences" options={{ headerShown: false }}/>
+    <Stack.Screen name="shareLocation" options={{ headerShown: false }}/>
+    <Stack.Screen name="setLocation" options={{ headerShown: false }}/>
     <Stack.Screen name="+not-found" />
     </Stack>
   );
