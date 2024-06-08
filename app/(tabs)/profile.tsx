@@ -90,6 +90,7 @@ const ProfilePage: React.FC = () => {
             inputBox: { width: 350 },
             input: styles.input
           }}
+          header={true}
         />
         <Input
           type="Last Name"
@@ -100,6 +101,7 @@ const ProfilePage: React.FC = () => {
             inputBox: { width: 350 },
             input: styles.input
           }}
+          header={true}
         />
         <Input
           type="Date of Birth"
@@ -110,6 +112,7 @@ const ProfilePage: React.FC = () => {
             inputBox: { width: 350 },
             input: styles.input
           }}
+          header={true}
         />
         <Input
           type="Gender"
@@ -120,6 +123,7 @@ const ProfilePage: React.FC = () => {
             inputBox: { width: 350 },
             input: styles.input
           }}
+          header={true}
         />
       </View>
 
