@@ -47,7 +47,11 @@ export default function RewardTab() {
             scrollRef.current.scrollTo({ x: 0 });
           }}
         >
-          <Text style={activeTab === "MyWallet" ? styles.navTextActive : styles.navText}>
+          <Text
+            style={
+              activeTab === "MyWallet" ? styles.navTextActive : styles.navText
+            }
+          >
             My Wallet
           </Text>
         </TouchableOpacity>
@@ -61,7 +65,11 @@ export default function RewardTab() {
             scrollRef.current.scrollTo({ x: width });
           }}
         >
-          <Text style={activeTab === "MyRewards" ? styles.navTextActive : styles.navText}>
+          <Text
+            style={
+              activeTab === "MyRewards" ? styles.navTextActive : styles.navText
+            }
+          >
             My Rewards
           </Text>
         </TouchableOpacity>
@@ -84,7 +92,11 @@ export default function RewardTab() {
           <View style={styles.transactionHistory}>
             <Text style={styles.transactionText}>Transaction History</Text>
             <SafeAreaView
-              style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               <Text style={styles.noTransactionText}>
                 You have no recent transaction.
@@ -93,14 +105,24 @@ export default function RewardTab() {
           </View>
         </View>
         <View style={styles.tab}>
-          <Text style={styles.pointsText}>My Rewards Content</Text>
+          <SafeAreaView style={{ width: "100%", alignItems: "flex-end" }}>
+            <TouchableOpacity>
+              <Text style={styles.viewHistoryText}>View History</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
           <View style={styles.transactionHistory}>
-            <Text style={styles.transactionText}>Rewards History</Text>
             <SafeAreaView
-              style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
+              <Text style={styles.transactionText}>
+                You don't have any rewards yet
+              </Text>
               <Text style={styles.noTransactionText}>
-                You have no rewards history yet.
+                Start exchanging Ecopoints for rewards!
               </Text>
             </SafeAreaView>
           </View>
@@ -223,5 +245,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#000000",
     fontWeight: "bold",
+  },
+  viewHistoryText: {
+    color: "#0062E0",
+    fontSize: 12,
+    textAlign: "right",
+    marginTop: 10,
+    marginRight: 10,
   },
 });
