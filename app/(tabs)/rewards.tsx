@@ -9,6 +9,7 @@ import {
   Dimensions,
   ScrollView,
 } from "react-native";
+import { Icon } from "@/components/navigation/Icon";
 
 const { width } = Dimensions.get("window");
 
@@ -83,12 +84,18 @@ export default function RewardTab() {
         ref={scrollRef}
       >
         <View style={styles.tab}>
-          <Text style={styles.pointsText}>My Eco Points:</Text>
-          <Text style={styles.pointsValue}>0</Text>
-          <TouchableOpacity style={styles.redeemButton}>
-            <Text style={styles.redeemButtonText}>Redeem Now</Text>
-          </TouchableOpacity>
-          <Text style={styles.expiryText}>No Eco Points expiring yet.</Text>
+          
+          <View>
+            <Text style={styles.pointsText}>My Eco Points:</Text>
+            <View style={{flexDirection:"row"}}>
+              <Text style={[styles.pointsValue,{marginRight:10}]}>0</Text>
+              <Icon name="leaf" size={48} color="#000" />
+            </View>
+            <TouchableOpacity style={styles.redeemButton}>
+              <Text style={styles.redeemButtonText}>Redeem Now</Text>
+            </TouchableOpacity>
+            <Text style={styles.expiryText}>No Eco Points expiring yet.</Text>
+          </View>
           <View style={styles.transactionHistory}>
             <Text style={styles.transactionText}>Transaction History</Text>
             <SafeAreaView
@@ -160,7 +167,7 @@ const styles = StyleSheet.create({
   },
   navItemActive: {
     borderBottomWidth: 2,
-    borderBottomColor: "#00FF00",
+    borderBottomColor: "#49B379",
   },
   navText: {
     fontSize: 16,
@@ -168,7 +175,7 @@ const styles = StyleSheet.create({
   },
   navTextActive: {
     fontSize: 16,
-    color: "#00FF00",
+    color: "#49B379",
     fontWeight: "bold",
   },
   content: {
@@ -194,7 +201,7 @@ const styles = StyleSheet.create({
   },
   redeemButton: {
     marginTop: 20,
-    backgroundColor: "#00FF00",
+    backgroundColor: "#49B379",
     padding: 10,
     borderRadius: 5,
   },
