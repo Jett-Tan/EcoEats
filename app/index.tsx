@@ -9,7 +9,7 @@ export default function Index() {
   const isSkip = false;
   
   const check = setInterval(() => {
-    auth.currentUser && router.push('/(tabs)/home') ;
+    (auth.currentUser && !isSkip) && router.push('/(tabs)/home') ;
   },100)
   setTimeout(() => {clearInterval(check)}, 1000);
 
@@ -43,7 +43,7 @@ export default function Index() {
             // <Redirect href="./(tabs)/add"/>
             // <Redirect href="./(tabs)/community"/>
             // <Redirect href="./(tabs)/profile"/>
-            <Redirect href="setLocation"/>
+            <Redirect href="(modalTabs)/sell"/>
           }
       </View>
   );

@@ -131,7 +131,7 @@ export default function SellPage() {
                 type=""
                 onPress={() => {
                     // writeUserData();
-                    // router.push("./shareLocation")
+                    router.back();
                 }}
                 style={{buttonContainer: {backgroundColor:"#3BAE6F"},button: {},text: styles.button_Text}}
                 />

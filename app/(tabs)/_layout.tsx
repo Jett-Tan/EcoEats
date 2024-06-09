@@ -4,14 +4,17 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { auth } from '@/components/auth/firebaseConfig';
-import { Text } from 'react-native';
-import AddModal from '../(modalTabs)/add';
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   if (!auth.currentUser) {
     return (
       <Redirect href="/"/>
     );
+  } else {
+    console.log('====================================');
+    console.log(auth.currentUser.email);
+    console.log('====================================');
   }
   return (
     <Tabs

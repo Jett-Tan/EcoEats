@@ -1,9 +1,6 @@
 import { Stack, Navigator } from "expo-router";
 
 export default function RootLayout() {
-  console.log('====================================');
-  console.log();
-  console.log('====================================');
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

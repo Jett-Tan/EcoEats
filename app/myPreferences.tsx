@@ -7,11 +7,11 @@ import { Icon } from "@/components/navigation/Icon";
 import Input from "@/components/Input";
 import CustomButton from "@/components/CustomButton";
 import { PressableIcon } from "@/components/navigation/PressableIcon";
-import Interests from "@/components/Interests";
+import Interests, { preferences ,defaultPreferences} from "@/components/Interests";
 import { auth } from "@/components/auth/firebaseConfig";
 
 export default function Index() {
-    const [myPreferences, setMyPreferences] = useState([]);
+    const [myPreferences, setMyPreferences] = useState<preferences[]>(defaultPreferences);
     const [name, setName] = useState('');
     const router = useRouter();
 

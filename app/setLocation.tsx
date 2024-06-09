@@ -55,7 +55,7 @@ export default function ShareLocation() {
         latitude !== 0 && longitude !== 0 && mapRef.current?.animateCamera({center: {latitude:latitude, longitude:longitude}, zoom: 15});
     }, 1000);
     
-    // clearInterval(timeInterval); //
+    clearInterval(timeInterval); 
     
     return (
         <View style={styles.container}>
@@ -89,7 +89,10 @@ export default function ShareLocation() {
                         height: 4,
                     },
                     shadowRadius: 5,},button: {},text: styles.button_Text}}
-                onPress={() => {router.push("./(tabs)/home")}}
+                onPress={() => {
+                    clearInterval(timeInterval); 
+                    router.push("./(tabs)/home")
+                }}
                 />
             </View>
         </View>
