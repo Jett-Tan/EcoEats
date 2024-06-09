@@ -153,6 +153,7 @@ const ProfilePage: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    marginTop:20,
   },
   container: {
     padding: 20,

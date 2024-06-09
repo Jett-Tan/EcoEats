@@ -84,8 +84,6 @@ export default function RewardTab() {
         ref={scrollRef}
       >
         <View style={styles.tab}>
-          
-          <View>
             <Text style={styles.pointsText}>My Eco Points:</Text>
             <View style={{flexDirection:"row"}}>
               <Text style={[styles.pointsValue,{marginRight:10}]}>0</Text>
@@ -95,7 +93,6 @@ export default function RewardTab() {
               <Text style={styles.redeemButtonText}>Redeem Now</Text>
             </TouchableOpacity>
             <Text style={styles.expiryText}>No Eco Points expiring yet.</Text>
-          </View>
           <View style={styles.transactionHistory}>
             <Text style={styles.transactionText}>Transaction History</Text>
             <SafeAreaView

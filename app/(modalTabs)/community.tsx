@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import CommunityTab from '../(tabs)/community';
 import AddModal from './add';
-export default function CommunityaTab() {
+export default function CommunityTabOverlay() {
     return (
       <>
         <AddModal/>

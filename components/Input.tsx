@@ -4,7 +4,7 @@ import { Icon } from "./navigation/Icon";
 import moment from "moment";
 
 interface TestProps {
-    type:"Email" | "Password" | "Phone" | "Name" | "Username" | "Location" | "First Name" | "Last Name" | "Date of Birth" | "Gender",
+    type:"Email" | "Password" | "Phone" | "Name" | "Username" | "Location" | "First Name" | "Last Name" | "Date of Birth" | "Gender" | "Title" | "Description" | "Quantity" | "Instructions" | "Price",
     placeholder?:string,
     value?:string,
     onChangeText?:Function,

@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View, Text } from "react-native";
 
 interface TestProps {
-    type?: "Email" | "Google" | "Facebook" | "Apple" | "",
+    type?: "Email" | "Google" | "Facebook" | "Apple" | "" | "Cancel",
     onPress?: Function
     text?:String,
     style?: {buttonContainer?: Object,button?: Object,text?: Object}

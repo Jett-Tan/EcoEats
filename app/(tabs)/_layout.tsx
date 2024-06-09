@@ -1,10 +1,11 @@
-import { Tabs, Stack, Navigator, useRootNavigationState, Redirect } from 'expo-router';
+import { Tabs, Redirect } from 'expo-router';
 import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { auth } from '@/components/auth/firebaseConfig';
-
+import { Text } from 'react-native';
+import AddModal from '../(modalTabs)/add';
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   if (!auth.currentUser) {
@@ -36,6 +37,7 @@ export default function TabLayout() {
             ),
             }}
       />
+      
       <Tabs.Screen
         name="spare"
         options={{

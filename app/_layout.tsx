@@ -12,6 +12,8 @@ export default function RootLayout() {
       <Stack.Screen name="(modalTabs)/community" options={{ headerShown: false }} />
       <Stack.Screen name="(modalTabs)/profile" options={{ headerShown: false }} />
       <Stack.Screen name="(modalTabs)/rewards" options={{ headerShown: false }} />
+      <Stack.Screen name="(modalTabs)/free" options={{ headerShown: true }} />
+      <Stack.Screen name="(modalTabs)/sell" options={{ headerShown: true }} />
 
       <Stack.Screen name="index" options={{ headerShown: false }}/>
       <Stack.Screen name="signup" options={{ headerShown: false }}/>
