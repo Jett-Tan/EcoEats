@@ -37,13 +37,21 @@ export default function TabLayout() {
             }}
       />
       <Tabs.Screen
-        name="add"
+        name="spare"
         options={{
           title: 'Add',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'add-circle' : 'add-circle'} color={color}/>
           ),
           }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault()
+            console.log(navigation.getState())
+            const state = navigation.getState().routeNames[navigation.getState().index]
+            navigation.navigate("(modalTabs)/" + state)
+          },
+        })}
       />
       <Tabs.Screen
         name="community"
