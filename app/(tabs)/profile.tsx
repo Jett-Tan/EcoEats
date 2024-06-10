@@ -1,17 +1,16 @@
+import { child, getDatabase, onValue, ref, set } from "firebase/database";
+import moment from "moment";
 import React, { useEffect, useState } from 'react';
-import { getDatabase, ref, get, set, child, onValue } from "firebase/database";
 import { Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'; //https://oblador.github.io/react-native-vector-icons/#MaterialIcons
-import moment from "moment";
 
-import { Icon } from "@/components/navigation/Icon";
+import CustomButton from '@/components/CustomButton';
 import Input from "@/components/Input";
-import PrefTab from '../prefTab';
+import Interests, { preferences } from '@/components/Interests';
+import { auth } from '@/components/auth/firebaseConfig';
+import { Icon } from "@/components/navigation/Icon";
 import BookmarkTab from '../savedTab';
 import StarTab from '../starTab';
-import { auth } from '@/components/auth/firebaseConfig';
-import CustomButton from '@/components/CustomButton';
-import Interests, {preferences} from '@/components/Interests';
 
 
 export default function ProfilePage() {
@@ -488,3 +487,4 @@ const styles = StyleSheet.create({
 });
 
 // export default ProfilePage;
+
