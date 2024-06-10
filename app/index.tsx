@@ -39,11 +39,12 @@ export default function Index() {
             && 
             // to change to your own page on load comment out the below line 
             // and uncomment the ur page below it
-            // <Redirect href="./(tabs)/home"/>
+            <Redirect href="./(tabs)/home"/>
             // <Redirect href="./(tabs)/add"/>
             // <Redirect href="./(tabs)/community"/>
             // <Redirect href="./(tabs)/profile"/>
-            <Redirect href="(modalTabs)/sell"/>
+            // <Redirect href="(modalTabs)/sell"/>
+            // <Redirect href="./(tabs)/rewards"/>
           }
       </View>
   );
