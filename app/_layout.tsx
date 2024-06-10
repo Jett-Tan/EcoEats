@@ -5,10 +5,7 @@ export default function RootLayout() {
   return (
     <Stack screenOptions={{gestureEnabled:false}} >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      {/* <Stack.Screen name="(tabs)/home"  options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)/community" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)/profile" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)/rewards" options={{ headerShown: false }} /> */}
+      <Stack.Screen name="myBookmarks" options={{ headerShown: false }} />
 
       <Stack.Screen name="(modalTabs)/home" options={{ headerShown: false }} />
       <Stack.Screen name="(modalTabs)/community" options={{ headerShown: false }} />

@@ -37,6 +37,7 @@ export default function CreateProfile() {
                 gender:gender,
                 description:description,
                 stars: userStars,
+                myBookmarks: [],
             });
         }
     }

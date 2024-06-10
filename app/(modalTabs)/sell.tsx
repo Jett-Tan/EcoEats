@@ -11,7 +11,7 @@ import { PressableIcon } from '@/components/navigation/PressableIcon';
 import  CustomButton  from '@/components/CustomButton';
 import { Icon } from '@/components/navigation/Icon';
 import Input from '@/components/Input';
-import { ShareMeals, LocationData } from './addData';
+import { ShareMeals, LocationData } from '../../components/addData';
 
 export default function SellPage() {
     const [title, setTitle] = useState("");

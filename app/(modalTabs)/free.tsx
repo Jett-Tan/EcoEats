@@ -11,7 +11,7 @@ import { PressableIcon } from '@/components/navigation/PressableIcon';
 import  CustomButton  from '@/components/CustomButton';
 import { Icon } from '@/components/navigation/Icon';
 import Input from '@/components/Input';
-import { ShareMeals, LocationData } from './addData';
+import { ShareMeals, LocationData } from '../../components/addData';
 
 export default function FreePage() {
     const [title, setTitle] = useState("");
@@ -98,10 +98,10 @@ export default function FreePage() {
             }).catch((error) => {
                 console.log("error");
                 const locations:LocationData = {
-                    Block: "data.GeocodeInfo[0].BLOCK",
-                    Road: "data.GeocodeInfo[0].ROAD",
-                    PostalCode: "data.GeocodeInfo[0].POSTALCODE",
-                    UnitNumber:"location"
+                    Block: "",
+                    Road: "",
+                    PostalCode: "",
+                    UnitNumber:location
                 };
                 return locations;});
             
@@ -116,8 +116,9 @@ export default function FreePage() {
             location: locationtemp,
             latitude: latitude,
             longitude: longitude,
+            rating: 0
         };
-        if (isDataValid()) {
+        if (isDataValid() && dataValidation.locationChecker(locationtemp)) {
             console.log('====================================');
             console.log("valid");
             console.log('====================================');
@@ -141,6 +142,13 @@ export default function FreePage() {
         }
     }
     const dataValidation = {
+        locationChecker: (e:LocationData) => {
+            if(e.Block === "" || e.Road === "" || e.PostalCode === "") {
+                return false
+            } else {
+                return true
+            }
+        },
         titleError:(e:string) => {
             if(e === "") {
                 setTitleError("title is Required")

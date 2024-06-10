@@ -8,19 +8,13 @@ export interface ShareMeals {
     latitude: number;
     longitude: number;
     photoUrl: string;
+    rating: number;
 }
-export interface DiscountedMeals {
-    user_id: string;
-    title: string;
-    description: string;
-    quantity: string;
+
+export interface  DiscountedMeals extends ShareMeals{
     price: string;
-    instructions: string;
-    location: LocationData;
-    latitude: number;
-    longitude: number;
-    photoUrl: string;
 }
+
 export interface LocationData {
     Block: string;
     Road: string;
