@@ -41,9 +41,9 @@ export default function Index() {
             // and uncomment the ur page below it
             // <Redirect href="./(tabs)/home"/>
             // <Redirect href="./(tabs)/add"/>
-            // <Redirect href="./(tabs)/community"/>
+            <Redirect href="./(tabs)/community"/>
             // <Redirect href="./(tabs)/profile"/>
-            <Redirect href="(modalTabs)/sell"/>
+            // <Redirect href="(modalTabs)/sell"/>
           }
       </View>
   );

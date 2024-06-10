@@ -1,24 +1,13 @@
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { SafeAreaView, StatusBar } from 'react-native';
+import ArticlesList from '../communityArticle';
 
-export default function CommunityTab() {
-    return (
-        <View style={styles.container}>
-            <Text>Community</Text>
-        </View>
-    );
-}
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ecf0f1',
-    padding: 8,
-  },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});
+const community = () => {
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar barStyle="dark-content" />
+      <ArticlesList />
+    </SafeAreaView>
+  );
+};
+export default community;
