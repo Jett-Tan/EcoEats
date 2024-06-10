@@ -76,6 +76,7 @@ const ArticlesList = () => {
             </TouchableOpacity>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>{selectedArticle.title}</Text>
+              <Image source={{ uri: selectedArticle.imageUrl }} style={styles.image}></Image>
               <Text style={styles.modalDescription}>{selectedArticle.description}</Text>
             </View>
           </View>
@@ -138,6 +139,7 @@ const styles = StyleSheet.create({
   modalDescription: {
     fontSize: 16,
     color: '#666',
+    marginTop:20,
   },
   closeButton: {
     position: 'absolute',
