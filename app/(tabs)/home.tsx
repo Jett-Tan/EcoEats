@@ -4,6 +4,9 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../.expo/types/types';
 import { Icon } from 'react-native-elements';
+import { getDatabase, ref, get, set, child, onValue } from "firebase/database";
+
+import { auth } from '@/components/auth/firebaseConfig';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
@@ -112,6 +115,23 @@ export default function HomeTab({ navigation }: Props) {
     setFilteredItems(filtered);
   }, [searchTerm, discountedItemsState, surplusItemsState, activeTab]);
   
+  const db = getDatabase();
+  const dbRef = ref(getDatabase());
+  useEffect(() => {
+    (async () => {
+      onValue(child(dbRef, 'items'), (snapshot) => {
+        if (snapshot.exists()) {
+          console.log("Data available");
+          const user = snapshot.val();
+          console.log(user);
+          // loadData(user);
+        } else {
+          console.log("No data available");
+        }
+      });
+    })();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
