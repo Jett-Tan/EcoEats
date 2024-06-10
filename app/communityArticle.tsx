@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
-import { firestore } from '../components/auth/firebaseConfig';
+import { getDatabase, ref, get, child } from 'firebase/database';
 
 interface Article {
   id: string;
@@ -18,11 +18,18 @@ const ArticlesList = () => {
 
   useEffect(() => {
     const fetchArticles = async () => {
+      const db = getDatabase();
+      const dbRef = ref(db);
+      const snapshot = await get(child(dbRef, 'articles'));
       const articlesList: Article[] = [];
-      const snapshot = await firestore().collection('articles').get();
-      snapshot.forEach(doc => {
-        articlesList.push({ id: doc.id, ...doc.data() } as Article);
-      });
+
+      if (snapshot.exists()) {
+        snapshot.forEach(childSnapshot => {
+          const article = { id: childSnapshot.key, ...childSnapshot.val() } as Article;
+          articlesList.push(article);
+        });
+      }
+
       setArticles(articlesList);
     };
 
@@ -84,4 +91,5 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 });
+
 export default ArticlesList;
