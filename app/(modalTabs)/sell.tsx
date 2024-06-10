@@ -62,76 +62,80 @@ export default function SellPage() {
     //     console.error("error", error);
     // });
     return (
-      <>
-        <Stack.Screen options={{title:"Sell your items", headerTitleAlign:"center"}}/>
-        <View style={styles.container}>
-          <View style={{marginBottom:100}}>
-             <TouchableOpacity style={{marginVertical:20,borderWidth:1,borderRadius:10,width:300, height:100,alignItems:"center",justifyContent:"center", borderStyle:"dashed", borderColor:"lightgrey"}} onPress={handleAddPhoto}>
-              <View style={{flexDirection:"column", justifyContent:'center',alignItems:"center"}}>
-                <Icon name='camera-outline' size={30}/>
-                <Text style={{fontSize:20}}>Add a Photo</Text>
-              </View>
-            </TouchableOpacity>
-            <View style={{height:500}}>
-              <ScrollView>
-
-                <Input
-                    placeholder="Enter title"
-                    value={title}
-                    type="Title"
-                    onChangeText={setTitle}
-                    header={true}
-                />
-                <Input
-                    placeholder="e.g. 5 servings of curry chicken"
-                    value={description}
-                    type="Description"
-                    onChangeText={setDescription}
-                    header={true}
-                />
-                <Input
-                    placeholder="Enter quantity"
-                    value={quantity}
-                    type="Quantity"
-                    onChangeText={setQuantity}
-                    header={true}
-                />
-                <Input
-                    placeholder="Enter price"
-                    value={price}
-                    type="Price"
-                    onChangeText={setPrice}
-                    header={true}
-                />
-                <Input
-                    placeholder="e.g. Please ring door bell"
-                    value={instructions}
-                    type="Instructions"
-                    onChangeText={setInstructions}
-                    header={true}
-                />
-                <View >
-                  <Text style={styles.input_Title}>Location</Text>
-                  <View style={{borderRadius:10}}>
-                    <MapView style={{width:300, height:150}} showsUserLocation initialRegion={region} ref={mapRef}>
-                      {latitude !== 0 && longitude !== 0 && <MapMarker coordinate={{
-                          latitude:latitude,
-                          longitude: longitude,
-                      }}
-                      />}
-                    </MapView>
-                  </View>
+        <>
+            <View style={styles.container}>
+                <View style={[styles.navigation,{zIndex:10}]}>
+                    <PressableIcon onPress={() => {router.dismiss(2)}} size={30} name="arrow-back-outline" />
                 </View>
-              </ScrollView>
+                <View style={[styles.navigation,{justifyContent:"center"}]}>
+                    <Text style={{fontSize:24,fontWeight:"bold"}}>Sell your item</Text>
+                </View>
+                <View style={{marginVertical:100}}>
+                    <TouchableOpacity style={{marginVertical:20,borderWidth:1,borderRadius:10,width:300, height:100,alignItems:"center",justifyContent:"center", borderStyle:"dashed", borderColor:"lightgrey"}} onPress={handleAddPhoto}>
+                        <View style={{flexDirection:"column", justifyContent:'center',alignItems:"center"}}>
+                            <Icon name='camera-outline' size={30}/>
+                            <Text style={{fontSize:20}}>Add a Photo</Text>
+                        </View>
+                    </TouchableOpacity>
+                <View style={{height:500}}>
+                    <ScrollView>
+                        <Input
+                            placeholder="Enter title"
+                            value={title}
+                            type="Title"
+                            onChangeText={setTitle}
+                            header={true}
+                        />
+                        <Input
+                            placeholder="e.g. 5 servings of curry chicken"
+                            value={description}
+                            type="Description"
+                            onChangeText={setDescription}
+                            header={true}
+                        />
+                        <Input
+                            placeholder="Enter quantity"
+                            value={quantity}
+                            type="Quantity"
+                            onChangeText={setQuantity}
+                            header={true}
+                        />
+                        <Input
+                            placeholder="Enter price"
+                            value={price}
+                            type="Price"
+                            onChangeText={setPrice}
+                            header={true}
+                        />
+                        <Input
+                            placeholder="e.g. Please ring door bell"
+                            value={instructions}
+                            type="Instructions"
+                            onChangeText={setInstructions}
+                            header={true}
+                        />
+                        <View>
+                            <Text style={styles.input_Title}>Location</Text>
+                            <View style={{borderRadius:10}}>
+                                <MapView style={{width:300, height:150}} showsUserLocation initialRegion={region} ref={mapRef}>
+                                {latitude !== 0 && longitude !== 0 && <MapMarker coordinate={{
+                                    latitude:latitude,
+                                    longitude: longitude,
+                                }}
+                                />}
+                                </MapView>
+                            </View>
+                        </View>
+                    </ScrollView>
+                </View>
             </View>
-          </View>
-            <View style={{position:"absolute",marginBottom:50,left:0,bottom:0,marginLeft:7,width:"100%",alignItems:"center"}}>
+            <View style={{position:"absolute",marginBottom:50,left:0,bottom:0,width:"100%",alignItems:"center"}}>
                 <CustomButton 
                 text="Add Now"
                 type=""
                 onPress={() => {
                     // writeUserData();
-                    router.back();
+                    router.dismiss(2)
                 }}
                 style={{buttonContainer: {backgroundColor:"#3BAE6F"},button: {},text: styles.button_Text}}
                 />
@@ -174,7 +178,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#fff',
-        padding: 8,
+        // padding: 8,
     },
     icon:{
         width: 279,

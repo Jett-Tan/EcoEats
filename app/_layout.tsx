@@ -1,16 +1,21 @@
-import { Stack, Navigator } from "expo-router";
+import { Stack, Navigator, useRouter } from "expo-router";
 
 export default function RootLayout() {
+  const router = useRouter();
   return (
-    <Stack>
+    <Stack screenOptions={{gestureEnabled:false}} >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      {/* <Stack.Screen name="(tabs)/home"  options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)/community" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)/profile" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)/rewards" options={{ headerShown: false }} /> */}
 
       <Stack.Screen name="(modalTabs)/home" options={{ headerShown: false }} />
       <Stack.Screen name="(modalTabs)/community" options={{ headerShown: false }} />
       <Stack.Screen name="(modalTabs)/profile" options={{ headerShown: false }} />
       <Stack.Screen name="(modalTabs)/rewards" options={{ headerShown: false }} />
-      <Stack.Screen name="(modalTabs)/free" options={{ headerShown: true }} />
-      <Stack.Screen name="(modalTabs)/sell" options={{ headerShown: true }} />
+      <Stack.Screen name="(modalTabs)/free" options={{ headerShown: false,animation:"none",animationDuration:0 }} />
+      <Stack.Screen name="(modalTabs)/sell" options={{ headerShown: false,animation:"none",animationDuration:0 }} />
 
       <Stack.Screen name="index" options={{ headerShown: false }}/>
       <Stack.Screen name="signup" options={{ headerShown: false }}/>
