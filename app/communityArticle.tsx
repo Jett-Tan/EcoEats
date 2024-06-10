@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Modal } from 'react-native';
 import { getDatabase, ref, get, child } from 'firebase/database';
 
 interface Article {
@@ -15,6 +15,7 @@ interface Article {
 
 const ArticlesList = () => {
   const [articles, setArticles] = useState<Article[]>([]);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -36,26 +37,58 @@ const ArticlesList = () => {
     fetchArticles();
   }, []);
 
+  const openArticleModal = (article: Article) => {
+    setSelectedArticle(article);
+  };
+
+  const closeModal = () => {
+    setSelectedArticle(null);
+  };
+
   const renderItem = ({ item }: { item: Article }) => (
-    <View style={styles.articleContainer}>
-      <Image source={{ uri: item.imageUrl }} style={styles.image} />
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.description}>{item.description}</Text>
-      <Text style={styles.meta}>{`${item.time} | ${item.views} views | ${item.likes} likes | ${item.comments} comments`}</Text>
-    </View>
+    <TouchableOpacity onPress={() => openArticleModal(item)}>
+      <View style={styles.articleContainer}>
+        <Image source={{ uri: item.imageUrl }} style={styles.image} />
+        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.shortDescription}>{item.description.substring(0, 100)}...</Text>
+        <Text style={styles.meta}>{`${item.time} | ${item.views} views | ${item.likes} likes | ${item.comments} comments`}</Text>
+      </View>
+    </TouchableOpacity>
   );
 
   return (
-    <FlatList
-      data={articles}
-      renderItem={renderItem}
-      keyExtractor={item => item.id}
-      contentContainerStyle={styles.list}
-    />
+    <View style={styles.container}>
+      <FlatList
+        data={articles}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.list}
+      />
+      <Modal
+        visible={selectedArticle !== null}
+        animationType="slide"
+        onRequestClose={closeModal}
+      >
+        {selectedArticle && (
+          <View style={styles.modalContainer}>
+            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>{selectedArticle.title}</Text>
+              <Text style={styles.modalDescription}>{selectedArticle.description}</Text>
+            </View>
+          </View>
+        )}
+      </Modal>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   list: {
     padding: 10,
   },
@@ -80,7 +113,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
   },
-  description: {
+  shortDescription: {
     fontSize: 14,
     color: '#666',
     marginTop: 5,
@@ -90,6 +123,34 @@ const styles = StyleSheet.create({
     color: '#999',
     marginTop: 10,
   },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  modalContent: {
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalDescription: {
+    fontSize: 16,
+    color: '#666',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 999,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#007BFF',
+  },
 });
 
 export default ArticlesList;
+
