@@ -11,24 +11,7 @@ import { PressableIcon } from '@/components/navigation/PressableIcon';
 import  CustomButton  from '@/components/CustomButton';
 import { Icon } from '@/components/navigation/Icon';
 import Input from '@/components/Input';
-
-interface ShareMeals {
-    type: string | "Surplus" | "Discounted";
-    user_id: string;
-    title: string;
-    description: string;
-    quantity: string;
-    instructions: string;
-    location: Location;
-    latitude: number;
-    longitude: number;
-    photoUrl: string;
-}
-interface Location {
-    Block: string;
-    Road: string;
-    PostalCode: string;
-}
+import { ShareMeals, LocationData } from './addData';
 
 export default function FreePage() {
     const [title, setTitle] = useState("");
@@ -36,14 +19,14 @@ export default function FreePage() {
     const [quantity, setQuantity] = useState("");
     const [instructions, setInstructions] = useState("");
     const [location, setLocation] = useState("");
-    const [photoUrl, setPhotoUrl] = useState("");
+    const [photoUrl, setPhotoUrl] = useState("Test");
 
     const [titleError, setTitleError] = useState("");
     const [descriptionError, setDescriptionError] = useState("");
     const [quantityError, setQuantityError] = useState("");
     const [instructionsError, setInstructionsError] = useState("");
     const [locationError, setLocationError] = useState("");
-    const [photoUrlError, setPhotoUrlError] = useState("Test");
+    const [photoUrlError, setPhotoUrlError] = useState("");     
 
     const region ={
         latitude: 1.290270, 
@@ -94,7 +77,7 @@ export default function FreePage() {
             }).catch((error) => {console.log("error")});  
         console.log(latitude, longitude);
         
-        const locationtemp:Location = await fetch(
+        const locationtemp:LocationData = await fetch(
             "https://www.onemap.gov.sg/api/public/revgeocode?location="+latitude+"%2C"+longitude+"&buffer=40&addressType=All&otherFeatures=N",
             {
                 method: "GET",
@@ -105,24 +88,25 @@ export default function FreePage() {
             }).then(async (response) => {
                 const data = await response.json();
                 console.log(data);
-                const locations:Location = {
+                const locations:LocationData = {
                     Block: data.GeocodeInfo[0].BLOCK,
                     Road: data.GeocodeInfo[0].ROAD,
                     PostalCode: data.GeocodeInfo[0].POSTALCODE,
+                    UnitNumber:location
                 };
                 return locations;
             }).catch((error) => {
                 console.log("error");
-                const locations:Location = {
+                const locations:LocationData = {
                     Block: "data.GeocodeInfo[0].BLOCK",
                     Road: "data.GeocodeInfo[0].ROAD",
                     PostalCode: "data.GeocodeInfo[0].POSTALCODE",
+                    UnitNumber:"location"
                 };
                 return locations;});
             
 
         const postData:ShareMeals = {
-            type:  "Surplus",
             title: title,
             photoUrl:photoUrl,
             user_id: auth.currentUser?.uid || "",
@@ -137,14 +121,12 @@ export default function FreePage() {
             console.log('====================================');
             console.log("valid");
             console.log('====================================');
-            const newPostKey = push(child(ref(db), 'posts')).key;
+            const newPostKey = push(child(ref(db), 'items/surplus')).key;
             const updates:any = {};
-            updates['/posts/' + newPostKey]= postData;
-            update(ref(db), updates);
+            set(ref(db, 'items/surplus/' + newPostKey), postData);
             router.dismiss(2)
         }
     }
-    // writeUserData();
     const isDataValid = () => {
         dataValidation.titleError(title);
         dataValidation.descriptionError(description);
@@ -260,7 +242,7 @@ export default function FreePage() {
                             <Text style={styles.input_Title}>Location</Text>
                             <Input 
                                 type="Location" 
-                                placeholder="Enter your location" 
+                                placeholder="Enter your unit number" 
                                 header={false} 
                                 onChangeText={(e: any) => setLocation(e)} 
                             />
@@ -363,5 +345,6 @@ const styles = StyleSheet.create({
         width: "100%",
         flexDirection: "row",
         justifyContent: "flex-start",
+        
     }
 });

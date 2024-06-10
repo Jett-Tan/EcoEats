@@ -1,15 +1,17 @@
-import { View, Text, StyleSheet, TouchableOpacity,ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, InteractionManager } from 'react-native';
+import { getDatabase, ref, get, set, child, onValue,push, update } from "firebase/database";
 import { useState, useEffect } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import MapView, { MapMarker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import React from 'react';
 
+import { auth } from '@/components/auth/firebaseConfig';
 import { PressableIcon } from '@/components/navigation/PressableIcon';
 import  CustomButton  from '@/components/CustomButton';
 import { Icon } from '@/components/navigation/Icon';
 import Input from '@/components/Input';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ShareMeals, LocationData } from './addData';
 
 export default function SellPage() {
     const [title, setTitle] = useState("");
@@ -17,6 +19,16 @@ export default function SellPage() {
     const [quantity, setQuantity] = useState("");
     const [price, setPrice] = useState("");
     const [instructions, setInstructions] = useState("");
+    const [location, setLocation] = useState("");
+    const [photoUrl, setPhotoUrl] = useState("Test");
+    
+    const [titleError, setTitleError] = useState("");
+    const [descriptionError, setDescriptionError] = useState("");
+    const [quantityError, setQuantityError] = useState("");
+    const [priceError, setPriceError] = useState("");
+    const [instructionsError, setInstructionsError] = useState("");
+    const [locationError, setLocationError] = useState("");
+    const [photoUrlError, setPhotoUrlError] = useState("");     
 
     const region ={
         latitude: 1.290270, 
@@ -45,22 +57,143 @@ export default function SellPage() {
 
     const router = useRouter();
     const handleAddPhoto = () => {console.log("add photo")}
-    // const db = getDatabase();
-    // function writeUserData() {
-    //     set(ref(db, 'users/' + auth.currentUser?.uid + '/myPreferences'), {
-    //         myPreferences,
-    //     });
-    // }
-    // get(ref(db, `users/`+ auth.currentUser?.uid)).then((snapshot) => {
-    // if (snapshot.exists()) {
-    //     console.log(snapshot.val());
-    //     setName(snapshot.val().firstName);
-    // } else {
-    //     console.log("No data available");
-    // }
-    // }).catch((error) => {
-    //     console.error("error", error);
-    // });
+    const db = getDatabase();
+    async function writeUserData() {
+        const data = JSON.stringify({
+            "email": "tanjianfeng01@gmail.com",
+            "password": "EcoEatsPass123!"
+        });
+        const accessToken = await fetch(
+            "https://www.onemap.gov.sg/api/auth/post/getToken",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: data,
+            })
+            .then(async (response) => {
+                const data = await response.json();
+                console.log(data);
+                return data.access_token;
+            }).catch((error) => {console.log("error")});  
+        console.log(latitude, longitude);
+        
+        const locationtemp:LocationData = await fetch(
+            "https://www.onemap.gov.sg/api/public/revgeocode?location="+latitude+"%2C"+longitude+"&buffer=40&addressType=All&otherFeatures=N",
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": accessToken
+                },
+            }).then(async (response) => {
+                const data = await response.json();
+                console.log(data);
+                const locations:LocationData = {
+                    Block: data.GeocodeInfo[0].BLOCK,
+                    Road: data.GeocodeInfo[0].ROAD,
+                    PostalCode: data.GeocodeInfo[0].POSTALCODE,
+                    UnitNumber:location
+                };
+                return locations;
+            }).catch((error) => {
+                console.log("error");
+                const locations:LocationData = {
+                    Block: "data.GeocodeInfo[0].BLOCK",
+                    Road: "data.GeocodeInfo[0].ROAD",
+                    PostalCode: "data.GeocodeInfo[0].POSTALCODE",
+                    UnitNumber:"location"
+                };
+                return locations;});
+            
+
+        const postData:ShareMeals = {
+            title: title,
+            photoUrl:photoUrl,
+            user_id: auth.currentUser?.uid || "",
+            description: description,
+            quantity: quantity,
+            instructions: instructions,
+            location: locationtemp,
+            latitude: latitude,
+            longitude: longitude,
+        };
+        if (isDataValid()) {
+            console.log('====================================');
+            console.log("valid");
+            console.log('====================================');
+            const newPostKey = push(child(ref(db), 'items/discounted')).key;
+            const updates:any = {};
+            set(ref(db, 'items/discounted/' + newPostKey), postData);
+            router.dismiss(2)
+        }
+    }
+    const isDataValid = () => {
+        dataValidation.titleError(title);
+        dataValidation.descriptionError(description);
+        dataValidation.quantityError(Number(quantity));
+        dataValidation.priceError(Number(price));
+        dataValidation.instructionsError(instructions);
+        dataValidation.locationError(location);
+        dataValidation.photoUrlError(photoUrl);
+        if (titleError === "" && descriptionError === "" && quantityError === "" && priceError === "" && instructionsError === "" && locationError === "" && photoUrlError === "") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    const dataValidation = {
+        titleError:(e:string) => {
+            if(e === "") {
+                setTitleError("title is Required")
+            } else {
+                setTitleError('')
+            }
+        },
+        descriptionError:(e:string) => {
+            if(e === "") {
+                setDescriptionError("description is Required")
+            } else {
+                setDescriptionError('')
+            }
+        },
+        quantityError:(e:number) => {
+            if(e === 0) {
+                setQuantityError("quantity is Required")
+            } else {
+                setQuantityError('')
+            }
+        },
+        priceError:(e:number) => {
+            if(e === 0) {
+                setPriceError("price is Required")
+            } else {
+                setPriceError('')
+            }
+        },
+        instructionsError:(e:string) => {
+            if(e === "") {
+                setInstructionsError("instructions is Required")
+            } else {
+                setInstructionsError('')
+            }
+        },
+        locationError:(e:string) => {
+            if(e === "") {
+                setLocationError("location is Required")
+            } else {
+                setLocationError('')
+            }
+        },
+        photoUrlError:(e:string) => {
+            if(e === "") {
+                setPhotoUrlError("photoUrl is Required")
+            } else {
+                setPhotoUrlError('')
+            }
+        },
+    }
     return (
         <>
             <View style={styles.container}>
@@ -84,6 +217,8 @@ export default function SellPage() {
                             value={title}
                             type="Title"
                             onChangeText={setTitle}
+                            error={titleError}
+                            catchError={dataValidation.titleError}
                             header={true}
                         />
                         <Input
@@ -91,6 +226,8 @@ export default function SellPage() {
                             value={description}
                             type="Description"
                             onChangeText={setDescription}
+                            error={descriptionError}
+                            catchError={dataValidation.descriptionError}
                             header={true}
                         />
                         <Input
@@ -98,6 +235,8 @@ export default function SellPage() {
                             value={quantity}
                             type="Quantity"
                             onChangeText={setQuantity}
+                            error={quantityError}
+                            catchError={dataValidation.quantityError}
                             header={true}
                         />
                         <Input
@@ -105,6 +244,8 @@ export default function SellPage() {
                             value={price}
                             type="Price"
                             onChangeText={setPrice}
+                            error={priceError}
+                            catchError={dataValidation.priceError}
                             header={true}
                         />
                         <Input
@@ -112,10 +253,21 @@ export default function SellPage() {
                             value={instructions}
                             type="Instructions"
                             onChangeText={setInstructions}
+                            error={instructionsError}
+                            catchError={dataValidation.instructionsError}
                             header={true}
                         />
                         <View>
                             <Text style={styles.input_Title}>Location</Text>
+                            <Input
+                                placeholder="Enter your unit number"
+                                value={location}
+                                type="Location"
+                                onChangeText={setLocation}
+                                error={locationError}
+                                catchError={dataValidation.locationError}
+                                header={false}
+                            />
                             <View style={{borderRadius:10}}>
                                 <MapView style={{width:300, height:150}} showsUserLocation initialRegion={region} ref={mapRef}>
                                 {latitude !== 0 && longitude !== 0 && <MapMarker coordinate={{
@@ -134,8 +286,7 @@ export default function SellPage() {
                 text="Add Now"
                 type=""
                 onPress={() => {
-                    // writeUserData();
-                    router.dismiss(2)
+                    writeUserData();
                 }}
                 style={{buttonContainer: {backgroundColor:"#3BAE6F"},button: {},text: styles.button_Text}}
                 />
