@@ -299,6 +299,7 @@ export default function HomeTab({ navigation }: Props) {
               setModalItem(item);
               setModalVisible(true);
             }}>
+            <Image src={item.item.photoUrl} style={{ marginBottom: 10, borderWidth: 1, borderColor: "black", width: "100%", height: 200 }}></Image>
             <View style={styles.itemHeader}>
               <Text style={styles.itemTitle}>{item.item.title}</Text>
               <PressableIcon
