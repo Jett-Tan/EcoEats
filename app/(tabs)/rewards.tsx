@@ -1,15 +1,16 @@
-import { useState, useRef, useEffect } from "react";
+import { Icon } from "@/components/navigation/Icon";
+import { router } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
   Animated,
   Dimensions,
+  SafeAreaView,
   ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Icon } from "@/components/navigation/Icon";
 
 const { width } = Dimensions.get("window");
 
@@ -30,6 +31,10 @@ export default function RewardTab() {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const currentIndex = Math.round(contentOffsetX / width);
     setActiveTab(currentIndex === 0 ? "MyWallet" : "MyRewards");
+  };
+
+  const handleRedeemNowPress = () => {
+    router.push('/redeemEcoPoints');
   };
 
   return (
@@ -86,10 +91,10 @@ export default function RewardTab() {
         <View style={styles.tab}>
             <Text style={styles.pointsText}>My Eco Points:</Text>
             <View style={{flexDirection:"row"}}>
-              <Text style={[styles.pointsValue,{marginRight:10}]}>0</Text>
+              <Text style={[styles.pointsValue,{marginRight:10}]}>150</Text>
               <Icon name="leaf" size={48} color="#000" />
             </View>
-            <TouchableOpacity style={styles.redeemButton}>
+            <TouchableOpacity style={styles.redeemButton} onPress ={handleRedeemNowPress}>
               <Text style={styles.redeemButtonText}>Redeem Now</Text>
             </TouchableOpacity>
             <Text style={styles.expiryText}>No Eco Points expiring yet.</Text>
