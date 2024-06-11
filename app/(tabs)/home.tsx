@@ -188,7 +188,7 @@ export default function HomeTab({ navigation }: Props) {
           onPress={() => router.push('/locationPage')}
         />
         <PressableIcon
-          name="bookmark-outline"
+          name="journal-outline"
           size={24}
           onPress={() => router.push('/myReservations')}
         />
