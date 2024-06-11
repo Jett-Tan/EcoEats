@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   },
   addButton: {
     marginLeft: 10,
-    backgroundColor: "#007BFF",
+    backgroundColor: "#49B379",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   modalButton: {
-    backgroundColor: "#007BFF",
+    backgroundColor: "#49B379",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   },
   imagePlaceholder: {
     fontSize: 16,
-    color: "#007BFF",
+    color: "#49B379",
   },
 });
 
