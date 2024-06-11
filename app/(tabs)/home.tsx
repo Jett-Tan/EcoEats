@@ -292,7 +292,7 @@ export default function HomeTab({ navigation }: Props) {
       </Modal>
 
       <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+      <ScrollView style={styles.scrollViewContainer}>
         {chosenItems.map((item) => (
           <TouchableOpacity
             key={item.id}
