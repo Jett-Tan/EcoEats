@@ -1,6 +1,6 @@
+import { child, get, getDatabase, ref, update } from 'firebase/database';
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Modal, ScrollView } from 'react-native';
-import { getDatabase, ref, get, child, update } from 'firebase/database';
+import { FlatList, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface Article {
@@ -202,6 +202,7 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   modalContainer: {
+    marginTop: 50,
     flex: 1,
     backgroundColor: '#fff',
   },
