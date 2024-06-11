@@ -179,6 +179,7 @@ export default function HomeTab({ navigation }: Props) {
         <TextInput
           style={styles.searchBar}
           placeholder="Search"
+          placeholderTextColor= '#a0a0a0'
           value={searchTerm}
           onChangeText={setSearchTerm}
         />
@@ -344,9 +345,10 @@ const styles = StyleSheet.create({
     height: 30,
     borderColor: '#dcdcdc',
     borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 10,
     paddingLeft: 16,
     marginRight: 8,
+    backgroundColor: '#fff',
   },
   tabContainer: {
     flexDirection: 'row',
