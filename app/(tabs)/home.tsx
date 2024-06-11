@@ -1,13 +1,13 @@
+import { DiscountedMeals, ShareMeals } from '@/components/addData';
+import { auth } from '@/components/auth/firebaseConfig';
 import { PressableIcon } from '@/components/navigation/PressableIcon'; // Ensure the path is correct
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { getDatabase, onValue, ref, push, child, update, remove } from "firebase/database";
+import { useRouter } from 'expo-router';
+import { getDatabase, onValue, ref, update } from "firebase/database";
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from '../../.expo/types/types';
-import { ShareMeals, DiscountedMeals } from '@/components/addData';
-import { auth } from '@/components/auth/firebaseConfig';
-import { useRouter } from 'expo-router';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
@@ -161,7 +161,7 @@ export default function HomeTab({ navigation }: Props) {
         <PressableIcon
           name="bookmark-outline"
           size={24}
-          onPress={() => router.push('/myBookmarks')}
+          onPress={() => router.push('/savedTab')}
         />
       </View>
       <View style={styles.tabContainer}>
@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+    marginTop: 20,
   },
   header: {
     width: '100%',
