@@ -7,7 +7,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useRouter } from 'expo-router';
 import { child, get, getDatabase, onValue, push, ref, update } from "firebase/database";
 import React, { useEffect, useState } from 'react';
-import { Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MapView, { MapMarker } from 'react-native-maps';
 import { RootStackParamList } from '../../.expo/types/types';
 
@@ -212,6 +212,7 @@ export default function HomeTab({ navigation }: Props) {
           <Text style={activeTab === 'Surplus' ? styles.tabTextActive : styles.tabTextInactive}>Surplus</Text>
         </TouchableOpacity>
       </View>
+
       <Modal visible={modalVisible} transparent={true}>
         <View style={{ width: "100%", height: "100%", justifyContent: 'center', alignItems: "center" }}>
           <TouchableOpacity
@@ -289,6 +290,8 @@ export default function HomeTab({ navigation }: Props) {
           </View>
         </View>
       </Modal>
+
+      <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         {chosenItems.map((item) => (
           <TouchableOpacity
@@ -321,11 +324,16 @@ export default function HomeTab({ navigation }: Props) {
           </TouchableOpacity>
         ))}
       </ScrollView>
+      </SafeAreaView>
     </View>
   );
 }
 
+
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: '#ffffff',

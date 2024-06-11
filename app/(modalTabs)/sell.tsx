@@ -1,19 +1,18 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
-import { getDatabase, ref, get, set, child, onValue,push, update } from "firebase/database";
-import { useState, useEffect } from 'react';
-import { Stack, useRouter } from 'expo-router';
-import MapView, { MapMarker } from 'react-native-maps';
-import * as Location from 'expo-location';
-import React from 'react';
-import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from "expo-image-picker";
+import * as Location from 'expo-location';
+import { useRouter } from 'expo-router';
+import { child, getDatabase, push, ref, set } from "firebase/database";
+import React, { useEffect, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MapView, { MapMarker } from 'react-native-maps';
 
-import { auth } from '@/components/auth/firebaseConfig';
-import { PressableIcon } from '@/components/navigation/PressableIcon';
-import  CustomButton  from '@/components/CustomButton';
-import { Icon } from '@/components/navigation/Icon';
+import CustomButton from '@/components/CustomButton';
 import Input from '@/components/Input';
-import { ShareMeals, LocationData } from '../../components/addData';
+import { auth } from '@/components/auth/firebaseConfig';
+import { Icon } from '@/components/navigation/Icon';
+import { PressableIcon } from '@/components/navigation/PressableIcon';
+import { LocationData, ShareMeals } from '../../components/addData';
 
 export default function SellPage() {
     const [title, setTitle] = useState("");
