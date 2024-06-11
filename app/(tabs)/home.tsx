@@ -1,15 +1,15 @@
+import CustomButton from '@/components/CustomButton';
 import { DiscountedMeals, ShareMeals } from '@/components/addData';
 import { auth } from '@/components/auth/firebaseConfig';
 import { PressableIcon } from '@/components/navigation/PressableIcon'; // Ensure the path is correct
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useRouter } from 'expo-router';
-import { getDatabase, onValue, ref, update,get,push,child } from "firebase/database";
+import { child, get, getDatabase, onValue, push, ref, update } from "firebase/database";
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Image } from 'react-native';
-import { RootStackParamList } from '../../.expo/types/types';
+import { Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MapView, { MapMarker } from 'react-native-maps';
-import CustomButton from '@/components/CustomButton';
+import { RootStackParamList } from '../../.expo/types/types';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
@@ -190,7 +190,7 @@ export default function HomeTab({ navigation }: Props) {
         <PressableIcon
           name="bookmark-outline"
           size={24}
-          onPress={() => router.push('/savedTab')}
+          onPress={() => router.push('/myReservations')}
         />
       </View>
       <View style={styles.tabContainer}>
