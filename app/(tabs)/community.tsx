@@ -36,11 +36,24 @@ const Community = () => {
       aspect: [4, 3],
       quality: 1,
     });
-
+  
     if (!result.canceled) {
-      const imageUrl = result?.assets?.[0]?.uri ?? ''; // Extracting URI from assets
-      setNewArticle({ ...newArticle, imageUrl });
+      const uri = result?.assets?.[0]?.uri ?? ''; 
+      const base64 = await convertToBase64(uri);
+      setNewArticle({ ...newArticle, imageUrl: base64 });
     }
+  };
+
+  // Function to convert image URI to base64
+  const convertToBase64 = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(blob);
+    });
   };
 
   const addArticle = async () => {
@@ -53,7 +66,7 @@ const Community = () => {
           time: new Date().toLocaleTimeString("en-US", {
             hour: "2-digit",
             minute: "2-digit",
-          }), // Set the current time
+          }),
         });
         Alert.alert("Success", "Article added successfully!");
         setNewArticle({
