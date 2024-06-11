@@ -130,8 +130,8 @@ const Community = () => {
               }
             />
             <TextInput
-              style={styles.newArticleInput}
-              placeholder="Description"
+              style={styles.newArticleContent}
+              placeholder="Content"
               value={newArticle.description}
               onChangeText={(text) =>
                 setNewArticle({ ...newArticle, description: text })
@@ -219,6 +219,16 @@ const styles = StyleSheet.create({
   newArticleInput: {
     width: "100%",
     height: 40,
+    borderColor: "#ddd",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingLeft: 8,
+    backgroundColor: "#fff",
+    marginBottom: 10,
+  },
+  newArticleContent:{
+    width: "100%",
+    height: 100,
     borderColor: "#ddd",
     borderWidth: 1,
     borderRadius: 5,

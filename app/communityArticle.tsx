@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import { getDatabase, ref, get, child } from 'firebase/database';
 
 interface Article {
@@ -45,12 +45,16 @@ const ArticlesList = () => {
     setSelectedArticle(null);
   };
 
+  const formatDescription = (description: string) => {
+    return description.replace(/\\n/g, '\n');
+  };
+
   const renderItem = ({ item }: { item: Article }) => (
     <TouchableOpacity onPress={() => openArticleModal(item)}>
       <View style={styles.articleContainer}>
         <Image source={{ uri: item.imageUrl }} style={styles.image} />
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.shortDescription}>{item.description.substring(0, 100)}...</Text>
+        <Text style={styles.shortDescription}>{formatDescription(item.description.substring(0, 100))}...</Text>
         <Text style={styles.meta}>{`${item.time} | ${item.views} views | ${item.likes} likes | ${item.comments} comments`}</Text>
       </View>
     </TouchableOpacity>
@@ -74,11 +78,11 @@ const ArticlesList = () => {
             <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
-            <View style={styles.modalContent}>
+            <ScrollView contentContainerStyle={styles.modalContent}>
               <Text style={styles.modalTitle}>{selectedArticle.title}</Text>
-              <Image source={{ uri: selectedArticle.imageUrl }} style={styles.image}></Image>
-              <Text style={styles.modalDescription}>{selectedArticle.description}</Text>
-            </View>
+              <Image source={{ uri: selectedArticle.imageUrl }} style={styles.image} />
+              <Text style={styles.modalDescription}>{formatDescription(selectedArticle.description)}</Text>
+            </ScrollView>
           </View>
         )}
       </Modal>
@@ -130,6 +134,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     padding: 20,
+    paddingBottom: 40, // Extra padding at the bottom for better scrolling experience
   },
   modalTitle: {
     fontSize: 24,
@@ -139,7 +144,7 @@ const styles = StyleSheet.create({
   modalDescription: {
     fontSize: 16,
     color: '#666',
-    marginTop:20,
+    marginTop: 20,
   },
   closeButton: {
     position: 'absolute',
@@ -155,4 +160,3 @@ const styles = StyleSheet.create({
 });
 
 export default ArticlesList;
-
