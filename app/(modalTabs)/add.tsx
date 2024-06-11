@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet, Modal, Button, TouchableOpacity } from 'react-native';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
-import { Icon, Fa6Icon } from '@/components/navigation/Icon';
 import CustomButton from '@/components/CustomButton';
+import { Fa6Icon } from '@/components/navigation/Icon';
+import { useRouter } from 'expo-router';
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function AddModal(props:{modalVisible:boolean, toggleVisible:Function}) {
     const router = useRouter();
@@ -12,10 +11,14 @@ export default function AddModal(props:{modalVisible:boolean, toggleVisible:Func
           transparent={true}
           animationType='slide'
         >
-          <TouchableOpacity style={{backgroundColor:"black", width:'100%',height:"100%", opacity:0.5}} onPress={() => router.back()}></TouchableOpacity>
+          <TouchableOpacity style={{width:'100%',height:"100%"}} onPress={() => router.back()}></TouchableOpacity>
           <View style={{
             width:"100%",
             height:"30%",
+            borderTopWidth:2,
+            borderLeftWidth:2,
+            borderRightWidth:2,
+            borderColor:"black",
             backgroundColor:"#fff",
             justifyContent:"center",
             alignItems:"center",
