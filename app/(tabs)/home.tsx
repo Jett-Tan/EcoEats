@@ -17,7 +17,7 @@ type Props = {
   route: HomeScreenRouteProp;
 };
 
-type Item = {
+export type Item = {
   id: string;
   type: 'Discounted' | 'Surplus';
   item: DiscountedMeals | ShareMeals;
@@ -130,11 +130,11 @@ export default function HomeTab({ navigation }: Props) {
         setCurrBookmarkedItems([...CurrbookmarkedItems, id]);
       }
     }
-    await delay(1000);
-    console.log(CurrbookmarkedItems);
-    let updates = {}
-    updates['/myBookmarks/'] = CurrbookmarkedItems;
-    update(ref(db,`users/${auth.currentUser?.uid}`), updates)
+    // await delay(1000);
+    // console.log(CurrbookmarkedItems);
+    // let updates = {}
+    // updates['/myBookmarks/'] = CurrbookmarkedItems;
+    // update(ref(db,`users/${auth.currentUser?.uid}`), updates)
   };
 
   const  delay = async (ms: number) => await new Promise((res) => setTimeout(res, ms));
@@ -144,6 +144,7 @@ export default function HomeTab({ navigation }: Props) {
   const nonBookmarkedItems = chosenItems.filter(item => !item.bookmarked);
   chosenItems = [...bookmarkedItems, ...nonBookmarkedItems];
   const router = useRouter();
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -156,7 +157,7 @@ export default function HomeTab({ navigation }: Props) {
         <PressableIcon
           name="location-outline"
           size={24}
-          onPress={() => console.log('Location pressed')}
+          onPress={() => router.push('/locationPage')}
         />
         <PressableIcon
           name="bookmark-outline"
