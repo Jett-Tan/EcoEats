@@ -1,29 +1,24 @@
-import { auth } from '@/components/auth/firebaseConfig';
-import { View, Text, StyleSheet } from 'react-native';
+import { useState, useEffect } from "react";
+
 import ProfilePage from '../(tabs)/profile';
 import AddModal from './add';
 
 export default function ProfilePageOverlay() {
-  // auth.signOut();
-    return (
-        <>
-          <AddModal/>
-          <ProfilePage/>
-        </>
-    );
+  const [modalVisible, setModalVisible] = useState(true);
+
+  useEffect(() => {
+    setModalVisible(true);
+  }, []);
+
+  const toggleVisible = () => {
+    setModalVisible(!modalVisible);
+  }
+
+  return (
+    <>
+      <AddModal modalVisible={modalVisible} toggleVisible={toggleVisible}/>
+      {modalVisible && <ProfilePage/>}        
+      {/* <ProfilePage/> */}
+    </>
+  )
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ecf0f1',
-    padding: 8,
-  },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});

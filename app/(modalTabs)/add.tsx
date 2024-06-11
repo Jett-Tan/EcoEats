@@ -1,12 +1,14 @@
 import { View, Text, StyleSheet, Modal, Button, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
-import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
 import { Icon, Fa6Icon } from '@/components/navigation/Icon';
 import CustomButton from '@/components/CustomButton';
-export default function AddModal() {
+
+export default function AddModal(props:{modalVisible:boolean, toggleVisible:Function}) {
+    const router = useRouter();
     return (
         <Modal
-          visible = {true}
+          visible = {props.modalVisible}
           transparent={true}
           animationType='slide'
         >
@@ -24,7 +26,10 @@ export default function AddModal() {
             borderTopLeftRadius:50
           }}>
             <View >
-              <TouchableOpacity style={{alignItems:"center",flexDirection:"row",marginVertical:20}} onPress={() => router.replace("free")}> 
+              <TouchableOpacity style={{alignItems:"center",flexDirection:"row",marginVertical:20}} onPress={() => {
+                  router.navigate("free")
+                  props.toggleVisible()
+              }}> 
                 <View style={{width:50}}>
                   <Fa6Icon name={'hand-holding-heart'} size={40}/>
                 </View>
@@ -34,7 +39,12 @@ export default function AddModal() {
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity style={{alignItems:"center",flexDirection:"row",marginVertical:20}} onPress={() => router.replace("sell")}>
+              <TouchableOpacity style={{alignItems:"center",flexDirection:"row",marginVertical:20}} 
+                onPress={() => {
+                  router.navigate("sell")
+                  props.toggleVisible()
+                  
+                }}>
                 <View style={{width:50}}>
                   <Fa6Icon name={'tag'} size={40} />
                 </View>

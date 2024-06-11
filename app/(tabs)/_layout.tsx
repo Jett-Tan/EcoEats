@@ -12,9 +12,9 @@ export default function TabLayout() {
       <Redirect href="/"/>
     );
   } else {
-    console.log('====================================');
-    console.log(auth.currentUser.email);
-    console.log('====================================');
+    // console.log('====================================');
+    // console.log(auth.currentUser.email);
+    // console.log('====================================');
   }
   return (
     <Tabs

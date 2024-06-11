@@ -1,23 +1,24 @@
-import { useState, useRef, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  Animated,
-  Dimensions,
-  ScrollView,
-} from "react-native";
-import { Icon } from "@/components/navigation/Icon";
+import { useState, useEffect } from "react";
+
 import RewardTab from "../(tabs)/rewards";
 import AddModal from "./add";
 
-export default function RewardTabOverlay() {
-  return(
+export default function CommunityTabOverlay() {
+  const [modalVisible, setModalVisible] = useState(true);
+
+  useEffect(() => {
+    setModalVisible(true);
+  }, []);
+
+  const toggleVisible = () => {
+    setModalVisible(!modalVisible);
+  }
+
+  return (
     <>
-      <AddModal/>
-      <RewardTab/>
+      <AddModal modalVisible={modalVisible} toggleVisible={toggleVisible}/>
+      {modalVisible && <RewardTab/>}        
+      {/* <RewardTab/> */}
     </>
   )
 }

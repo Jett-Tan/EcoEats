@@ -1,19 +1,32 @@
-import { View, Text, StyleSheet, TouchableOpacity,ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, InteractionManager } from 'react-native';
+import { getDatabase, ref, get, set, child, onValue,push, update } from "firebase/database";
 import { useState, useEffect } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import MapView, { MapMarker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import React from 'react';
 
+import { auth } from '@/components/auth/firebaseConfig';
 import { PressableIcon } from '@/components/navigation/PressableIcon';
 import  CustomButton  from '@/components/CustomButton';
 import { Icon } from '@/components/navigation/Icon';
 import Input from '@/components/Input';
+import { ShareMeals, LocationData } from './addData';
+
 export default function FreePage() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [quantity, setQuantity] = useState("");
     const [instructions, setInstructions] = useState("");
+    const [location, setLocation] = useState("");
+    const [photoUrl, setPhotoUrl] = useState("Test");
+
+    const [titleError, setTitleError] = useState("");
+    const [descriptionError, setDescriptionError] = useState("");
+    const [quantityError, setQuantityError] = useState("");
+    const [instructionsError, setInstructionsError] = useState("");
+    const [locationError, setLocationError] = useState("");
+    const [photoUrlError, setPhotoUrlError] = useState("");     
 
     const region ={
         latitude: 1.290270, 
@@ -42,87 +55,217 @@ export default function FreePage() {
 
     const router = useRouter();
     const handleAddPhoto = () => {console.log("add photo")}
-    // const db = getDatabase();
-    // function writeUserData() {
-    //     set(ref(db, 'users/' + auth.currentUser?.uid + '/myPreferences'), {
-    //         myPreferences,
-    //     });
-    // }
-    // get(ref(db, `users/`+ auth.currentUser?.uid)).then((snapshot) => {
-    // if (snapshot.exists()) {
-    //     console.log(snapshot.val());
-    //     setName(snapshot.val().firstName);
-    // } else {
-    //     console.log("No data available");
-    // }
-    // }).catch((error) => {
-    //     console.error("error", error);
-    // });
+    const db = getDatabase();
+    async function writeUserData() {
+        const data = JSON.stringify({
+            "email": "tanjianfeng01@gmail.com",
+            "password": "EcoEatsPass123!"
+        });
+        const accessToken = await fetch(
+            "https://www.onemap.gov.sg/api/auth/post/getToken",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: data,
+            })
+            .then(async (response) => {
+                const data = await response.json();
+                console.log(data);
+                return data.access_token;
+            }).catch((error) => {console.log("error")});  
+        console.log(latitude, longitude);
+        
+        const locationtemp:LocationData = await fetch(
+            "https://www.onemap.gov.sg/api/public/revgeocode?location="+latitude+"%2C"+longitude+"&buffer=40&addressType=All&otherFeatures=N",
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": accessToken
+                },
+            }).then(async (response) => {
+                const data = await response.json();
+                console.log(data);
+                const locations:LocationData = {
+                    Block: data.GeocodeInfo[0].BLOCK,
+                    Road: data.GeocodeInfo[0].ROAD,
+                    PostalCode: data.GeocodeInfo[0].POSTALCODE,
+                    UnitNumber:location
+                };
+                return locations;
+            }).catch((error) => {
+                console.log("error");
+                const locations:LocationData = {
+                    Block: "data.GeocodeInfo[0].BLOCK",
+                    Road: "data.GeocodeInfo[0].ROAD",
+                    PostalCode: "data.GeocodeInfo[0].POSTALCODE",
+                    UnitNumber:"location"
+                };
+                return locations;});
+            
+
+        const postData:ShareMeals = {
+            title: title,
+            photoUrl:photoUrl,
+            user_id: auth.currentUser?.uid || "",
+            description: description,
+            quantity: quantity,
+            instructions: instructions,
+            location: locationtemp,
+            latitude: latitude,
+            longitude: longitude,
+        };
+        if (isDataValid()) {
+            console.log('====================================');
+            console.log("valid");
+            console.log('====================================');
+            const newPostKey = push(child(ref(db), 'items/surplus')).key;
+            const updates:any = {};
+            set(ref(db, 'items/surplus/' + newPostKey), postData);
+            router.dismiss(2)
+        }
+    }
+    const isDataValid = () => {
+        dataValidation.titleError(title);
+        dataValidation.descriptionError(description);
+        dataValidation.quantityError(Number(quantity));
+        dataValidation.instructionsError(instructions);
+        dataValidation.locationError(location);
+        dataValidation.photoUrlError(photoUrl);
+        if (titleError === "" && descriptionError === "" && quantityError === "" && instructionsError === "" && locationError === "" && photoUrlError === "") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    const dataValidation = {
+        titleError:(e:string) => {
+            if(e === "") {
+                setTitleError("title is Required")
+            } else {
+                setTitleError('')
+            }
+        },
+        descriptionError:(e:string) => {
+            if(e === "") {
+                setDescriptionError("description is Required")
+            } else {
+                setDescriptionError('')
+            }
+        },
+        quantityError:(e:number) => {
+            if(e === 0) {
+                setQuantityError("quantity is Required")
+            } else {
+                setQuantityError('')
+            }
+        },
+        instructionsError:(e:string) => {
+            if(e === "") {
+                setInstructionsError("instructions is Required")
+            } else {
+                setInstructionsError('')
+            }
+        },
+        locationError:(e:string) => {
+            if(e === "") {
+                setLocationError("location is Required")
+            } else {
+                setLocationError('')
+            }
+        },
+        photoUrlError:(e:string) => {
+            if(e === "") {
+                setPhotoUrlError("photoUrl is Required")
+            } else {
+                setPhotoUrlError('')
+            }
+        },
+    }
     return (
       <>
-      
-        <Stack.Screen options={{title:"Free items", headerTitleAlign:"center"}}/>
         <View style={styles.container}>
-          <View style={{marginBottom:100}}>
-             <TouchableOpacity style={{marginVertical:20,borderWidth:1,borderRadius:10,width:300, height:100,alignItems:"center",justifyContent:"center", borderStyle:"dashed", borderColor:"lightgrey"}} onPress={handleAddPhoto}>
-              <View style={{flexDirection:"column", justifyContent:'center',alignItems:"center"}}>
-                <Icon name='camera-outline' size={30}/>
-                <Text style={{fontSize:20}}>Add a Photo</Text>
-              </View>
-            </TouchableOpacity>
-            <View style={{height:500}}>
-              <ScrollView>
-
-                <Input
-                    placeholder="Enter title"
-                    value={title}
-                    type="Title"
-                    onChangeText={setTitle}
-                    header={true}
-                />
-                <Input
-                    placeholder="e.g. 5 servings of curry chicken"
-                    value={description}
-                    type="Description"
-                    onChangeText={setDescription}
-                    header={true}
-                />
-                <Input
-                    placeholder="Enter quantity"
-                    value={quantity}
-                    type="Quantity"
-                    onChangeText={setQuantity}
-                    header={true}
-                />
-                <Input
-                    placeholder="e.g. Please ring door bell"
-                    value={instructions}
-                    type="Instructions"
-                    onChangeText={setInstructions}
-                    header={true}
-                />
-                <View >
-                  <Text style={styles.input_Title}>Location</Text>
-                  <View style={{borderRadius:10}}>
-                    <MapView style={{width:300, height:150}} showsUserLocation initialRegion={region} ref={mapRef}>
-                      {latitude !== 0 && longitude !== 0 && <MapMarker coordinate={{
-                          latitude:latitude,
-                          longitude: longitude,
-                      }}
-                      />}
-                    </MapView>
-                  </View>
+            <View style={[styles.navigation,{zIndex:10}]}>
+                    <PressableIcon onPress={() => {router.dismiss(2)}} size={30} name="arrow-back-outline" />
                 </View>
-              </ScrollView>
+                <View style={[styles.navigation,{justifyContent:"center"}]}>
+                    <Text style={{fontSize:24,fontWeight:"bold"}}>Free item</Text>
+                </View>
+            <View style={{marginVertical:100}}>
+                <TouchableOpacity style={{marginVertical:20,borderWidth:1,borderRadius:10,width:300, height:100,alignItems:"center",justifyContent:"center", borderStyle:"dashed", borderColor:"lightgrey"}} onPress={handleAddPhoto}>
+                    <View style={{flexDirection:"column", justifyContent:'center',alignItems:"center"}}>
+                        <Icon name='camera-outline' size={30}/>
+                        <Text style={{fontSize:20}}>Add a Photo</Text>
+                    </View>
+                </TouchableOpacity>
+                <View style={{height:500}}>
+                    <ScrollView>
+                        <Input
+                            placeholder="Enter title"
+                            value={title}
+                            type="Title"
+                            onChangeText={setTitle}
+                            error={titleError}
+                            catchError={(e:string) => dataValidation.titleError(e)}
+                            header={true}
+                        />
+                        <Input
+                            placeholder="e.g. 5 servings of curry chicken"
+                            value={description}
+                            type="Description"
+                            onChangeText={setDescription}
+                            error={descriptionError}
+                            catchError={(e:string) => dataValidation.descriptionError(e)}
+                            header={true}
+                        />
+                        <Input
+                            placeholder="Enter quantity"
+                            value={quantity}
+                            type="Quantity"
+                            onChangeText={setQuantity}
+                            error={quantityError}
+                            catchError={(e:number) => dataValidation.quantityError(e)}
+                            header={true}
+                        />
+                        <Input
+                            placeholder="e.g. Please ring door bell"
+                            value={instructions}
+                            type="Instructions"
+                            onChangeText={setInstructions}
+                            error={instructionsError}
+                            catchError={(e:string) => dataValidation.instructionsError(e)}
+                            header={true}
+                        />
+                        <View>
+                            <Text style={styles.input_Title}>Location</Text>
+                            <Input 
+                                type="Location" 
+                                placeholder="Enter your unit number" 
+                                header={false} 
+                                onChangeText={(e: any) => setLocation(e)} 
+                            />
+                            <View style={{borderRadius:10}}>
+                                <MapView style={{width:300, height:150}} showsUserLocation initialRegion={region} ref={mapRef}>
+                                {latitude !== 0 && longitude !== 0 && <MapMarker coordinate={{
+                                    latitude:latitude,
+                                    longitude: longitude,
+                                }}
+                                />}
+                                </MapView>
+                            </View>
+                        </View>
+                    </ScrollView>
+                </View>
             </View>
-          </View>
-            <View style={{position:"absolute",marginBottom:50,left:0,bottom:0,marginLeft:7,width:"100%",alignItems:"center"}}>
+            <View style={{position:"absolute",marginBottom:50,left:0,bottom:0,width:"100%",alignItems:"center"}}>
                 <CustomButton 
                 text="Add Now"
                 type=""
                 onPress={() => {
-                    // writeUserData();
-                    // router.push("./shareLocation")
+                    writeUserData();
+                    
                 }}
                 style={{buttonContainer: {backgroundColor:"#3BAE6F"},button: {},text: styles.button_Text}}
                 />
@@ -165,7 +308,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#fff',
-        padding: 8,
+        // padding: 8,
     },
     icon:{
         width: 279,
@@ -202,5 +345,6 @@ const styles = StyleSheet.create({
         width: "100%",
         flexDirection: "row",
         justifyContent: "flex-start",
+        
     }
 });
