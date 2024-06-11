@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Modal, ScrollView } from 'react-native';
-import { getDatabase, ref, get, child } from 'firebase/database';
+import { getDatabase, ref, get, child, update } from 'firebase/database';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface Article {
   id: string;
@@ -13,9 +14,14 @@ interface Article {
   imageUrl: string;
 }
 
-const ArticlesList = () => {
+interface ArticlesListProps {
+  searchQuery: string;
+}
+
+const ArticlesList: React.FC<ArticlesListProps> = ({ searchQuery }) => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [likedArticles, setLikedArticles] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -37,8 +43,22 @@ const ArticlesList = () => {
     fetchArticles();
   }, []);
 
-  const openArticleModal = (article: Article) => {
-    setSelectedArticle(article);
+  const openArticleModal = async (article: Article) => {
+    try {
+      const db = getDatabase();
+      const articleRef = ref(db, `articles/${article.id}`);
+      const newViews = article.views + 1;
+
+      await update(articleRef, { views: newViews });
+
+      setArticles(articles.map(item =>
+        item.id === article.id ? { ...item, views: newViews } : item
+      ));
+
+      setSelectedArticle({ ...article, views: newViews });
+    } catch (error) {
+      console.error('Failed to update views:', error);
+    }
   };
 
   const closeModal = () => {
@@ -49,21 +69,63 @@ const ArticlesList = () => {
     return description.replace(/\\n/g, '\n');
   };
 
-  const renderItem = ({ item }: { item: Article }) => (
-    <TouchableOpacity onPress={() => openArticleModal(item)}>
-      <View style={styles.articleContainer}>
-        <Image source={{ uri: item.imageUrl }} style={styles.image} />
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.shortDescription}>{formatDescription(item.description.substring(0, 100))}...</Text>
-        <Text style={styles.meta}>{`${item.time} | ${item.views} views | ${item.likes} likes | ${item.comments} comments`}</Text>
-      </View>
-    </TouchableOpacity>
+  const handleLike = async (articleId: string, currentLikes: number) => {
+    try {
+      const db = getDatabase();
+      const articleRef = ref(db, `articles/${articleId}`);
+      const isLiked = likedArticles.has(articleId);
+      const newLikes = isLiked ? currentLikes - 1 : currentLikes + 1;
+
+      await update(articleRef, { likes: newLikes });
+
+      setArticles(articles.map(article =>
+        article.id === articleId ? { ...article, likes: newLikes } : article
+      ));
+
+      setLikedArticles(prevLikedArticles => {
+        const updatedLikes = new Set(prevLikedArticles);
+        if (isLiked) {
+          updatedLikes.delete(articleId);
+        } else {
+          updatedLikes.add(articleId);
+        }
+        return updatedLikes;
+      });
+    } catch (error) {
+      console.error('Failed to like article:', error);
+    }
+  };
+
+  const filteredArticles = articles.filter(article =>
+    article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    article.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const renderItem = ({ item }: { item: Article }) => {
+    const isLiked = likedArticles.has(item.id);
+
+    return (
+      <TouchableOpacity onPress={() => openArticleModal(item)}>
+        <View style={styles.articleContainer}>
+          <Image source={{ uri: item.imageUrl }} style={styles.image} />
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.shortDescription}>{formatDescription(item.description.substring(0, 100))}...</Text>
+          <View style={styles.metaContainer}>
+            <Text style={styles.meta}>{`${item.time} | ${item.views} views | ${item.comments} comments`}</Text>
+            <TouchableOpacity onPress={() => handleLike(item.id, item.likes)}>
+              <Icon name="heart" size={24} color={isLiked ? 'red' : 'lightgrey'} />
+              <Text style={styles.likesCount}>{item.likes}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={articles}
+        data={filteredArticles}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.list}
@@ -123,10 +185,21 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 5,
   },
+  metaContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+  },
   meta: {
     fontSize: 12,
     color: '#999',
-    marginTop: 10,
+    marginTop: 25,
+  },
+  likesCount: {
+    marginLeft: 5,
+    fontSize: 14,
+    color: '#666',
   },
   modalContainer: {
     flex: 1,

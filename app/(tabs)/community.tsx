@@ -44,8 +44,6 @@ const Community = () => {
   };
 
   const addArticle = async () => {
-    // Your existing code...
-
     if (newArticle.title && newArticle.description && newArticle.imageUrl) {
       try {
         const db = getDatabase(app);
@@ -99,7 +97,7 @@ const Community = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <ArticlesList />
+      <ArticlesList searchQuery={searchQuery} />
       <Modal
         animationType="slide"
         transparent={true}
@@ -136,6 +134,8 @@ const Community = () => {
               onChangeText={(text) =>
                 setNewArticle({ ...newArticle, description: text })
               }
+              multiline={true}
+              textAlignVertical="top" // Ensure the text starts from the top
             />
             <View style={styles.modalButtons}>
               <TouchableOpacity style={styles.modalButton} onPress={addArticle}>
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     marginBottom: 10,
   },
-  newArticleContent:{
+  newArticleContent: {
     width: "100%",
     height: 100,
     borderColor: "#ddd",
@@ -235,6 +235,7 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
     backgroundColor: "#fff",
     marginBottom: 10,
+    textAlignVertical: "top",
   },
   modalButtons: {
     flexDirection: "row",
