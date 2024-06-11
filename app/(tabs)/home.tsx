@@ -4,10 +4,12 @@ import { PressableIcon } from '@/components/navigation/PressableIcon'; // Ensure
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useRouter } from 'expo-router';
-import { getDatabase, onValue, ref, update } from "firebase/database";
+import { getDatabase, onValue, ref, update,get,push,child } from "firebase/database";
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Modal, Image } from 'react-native';
 import { RootStackParamList } from '../../.expo/types/types';
+import MapView, { MapMarker } from 'react-native-maps';
+import CustomButton from '@/components/CustomButton';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
@@ -32,6 +34,9 @@ export default function HomeTab({ navigation }: Props) {
   const [activeTab, setActiveTab] = useState<'Discounted' | 'Surplus'>('Discounted');
   const [CurrbookmarkedItems, setCurrBookmarkedItems] = useState<string[]>([]);
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalItem, setModalItem] = useState<Item>();
+  
   useEffect(() => {
     const db = getDatabase();
     const discountedItemsRef = ref(db, 'items/discounted');
@@ -137,6 +142,29 @@ export default function HomeTab({ navigation }: Props) {
     // update(ref(db,`users/${auth.currentUser?.uid}`), updates)
   };
 
+  const reserve = async (id:string) => {
+    const dbRef = ref(getDatabase());
+    const newPostKey = push(child(ref(db,`users/${auth.currentUser?.uid}`), '/myReservations')).key;
+    const currReservation =
+    get(child(dbRef, `users/${auth.currentUser?.uid}/myReservations`)).then((snapshot) => {
+      let updates = {}
+      if (snapshot.exists()) {
+        console.log(snapshot.val());
+        if (!snapshot.val().includes(id)) {
+          updates['/myReservations/'] = [...snapshot.val(),id];
+        }else {
+          updates['/myReservations/'] = snapshot.val();
+        }
+      } else {
+        updates['/myReservations/'] = [id];
+      }
+      update(ref(db,`users/${auth.currentUser?.uid}`), updates)
+    }).catch((error) => {
+      console.error(error);
+    });
+    
+  }
+
   const  delay = async (ms: number) => await new Promise((res) => setTimeout(res, ms));
 
   let chosenItems = activeTab === 'Discounted' ? discountedItems : surplusItems;
@@ -183,9 +211,76 @@ export default function HomeTab({ navigation }: Props) {
           <Text style={activeTab === 'Surplus' ? styles.tabTextActive : styles.tabTextInactive}>Surplus</Text>
         </TouchableOpacity>
       </View>
+      <Modal visible={modalVisible} transparent={true}>
+        <View style={{width:"100%",height:"100%",justifyContent:'center',alignItems:"center"}}>
+          <TouchableOpacity 
+            onPress={() => setModalVisible(false)} 
+            style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",backgroundColor:"rgba(0,0,0,0.5)"}}>
+          </TouchableOpacity>
+          <View style={{width:"85%",height:"80%", backgroundColor:"white", borderRadius:10,shadowRadius:10}}>
+            <View style={{padding:10,height:"100%"}}>
+              <PressableIcon style={{marginTop:20}}onPress={() => {setModalVisible(false)}} size={30} name="arrow-back-outline" />
+              {modalItem &&  (
+                <View style={{width:"100%", height:'80%'}}>
+                  <View style={[styles.itemHeader,{width:'100%',height:"15%",flexDirection:"row",alignItems:"flex-start"}]}>
+                    <View style={[styles.itemTextContainer,{width:"80%"}]}>
+                      <Text style={[styles.itemTitle,{fontSize:24}]}>{modalItem.item.title}</Text>
+                      <Text style={[styles.itemLocation,{flexWrap:"wrap"}]}>
+                        <Text>{modalItem.item.location.Road}, </Text>
+                        <Text>{modalItem.item.location.Block}, </Text>
+                        <Text>{modalItem.item.location.UnitNumber}, </Text>
+                        <Text>{modalItem.item.location.PostalCode}</Text>
+                      </Text>
+                    </View>
+                    <Text style={[styles.itemRating,{fontSize:20}]}>{modalItem.item.rating.toFixed(1)} ⭐</Text>
+                  </View>
+                  <View style={{width:"100%",height:"100%"}}>
+                    <ScrollView>
+                      <Image source={{uri:modalItem.item.photoUrl}} style={{marginBottom:10,borderWidth:1,borderColor:"black",width:"100%",height:200}} />
+                      <View style={styles.itemContainer}>
+                        <Text style={styles.itemTitle}>Description</Text>
+                        <Text>{modalItem.item.description}</Text>
+                      </View>
+                      <View style={styles.itemContainer}>
+                        <Text style={styles.itemTitle}>Quantity</Text>
+                        <Text>{modalItem.item.quantity}</Text>
+                      </View>
+                      {modalItem.type === "Discounted" && 
+                        <View style={styles.itemContainer}>
+                          <Text style={styles.itemTitle}>Price</Text>
+                          {/* {const s = modalItem.item as DiscountedMeals }
+                          <Text>{s.price}</Text> */}
+                        </View>
+                      }
+                      <View style={styles.itemContainer}>
+                        <Text style={styles.itemTitle}>Instructions</Text>
+                        <Text>{modalItem.item.instructions}</Text>
+                      </View>
+                      <View style={styles.itemContainer}>
+                        <Text style={styles.itemTitle}>Location</Text>
+                        <MapView style={{width:"100%",height:200,borderWidth:1,borderColor:"black"}} region={{latitude:modalItem.item.latitude,longitude:modalItem.item.longitude,latitudeDelta:0.01,longitudeDelta:0.01}}>
+                          <MapMarker coordinate={{latitude:modalItem.item.latitude,longitude:modalItem.item.longitude}}/>
+                        </MapView>
+                      </View>
+                      <CustomButton text="Reserve" onPress={() => reserve(modalItem.id)}type='' style={{buttonContainer:{width:"100%",backgroundColor:"#3BAE6F"},text:{color:"white"}}}/>
+                    </ScrollView>
+                  </View>
+                </View>
+              )}
+            </View>
+          </View>
+        </View>
+      </Modal>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         {chosenItems.map((item) => (
-          <TouchableOpacity key={item.id} style={styles.itemContainer} onPress={() => {console.log("Clicked",item.id)}}>
+          <TouchableOpacity 
+          key={item.id} 
+          style={styles.itemContainer} 
+          onPress={() => {
+            console.log("Clicked",item.id)
+            setModalItem(item);
+            setModalVisible(true);
+          }}>
             <View style={styles.itemHeader}>
               <Text style={styles.itemTitle}>{item.item.title}</Text>
               <PressableIcon

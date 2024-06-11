@@ -1,10 +1,12 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, InteractionManager } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { getDatabase, ref, get, set, child, onValue,push, update } from "firebase/database";
 import { useState, useEffect } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import MapView, { MapMarker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import React from 'react';
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from 'expo-file-system';
 
 import { auth } from '@/components/auth/firebaseConfig';
 import { PressableIcon } from '@/components/navigation/PressableIcon';
@@ -19,7 +21,7 @@ export default function FreePage() {
     const [quantity, setQuantity] = useState("");
     const [instructions, setInstructions] = useState("");
     const [location, setLocation] = useState("");
-    const [photoUrl, setPhotoUrl] = useState("Test");
+    const [photoUrl, setPhotoUrl] = useState("");
 
     const [titleError, setTitleError] = useState("");
     const [descriptionError, setDescriptionError] = useState("");
@@ -192,6 +194,24 @@ export default function FreePage() {
             }
         },
     }
+
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            const imageUrl = result?.assets?.[0]?.uri ?? ''; // Extracting URI from assets
+            const base64 = await FileSystem.readAsStringAsync(imageUrl, { encoding: 'base64' });
+            setPhotoUrl("data:image/jpeg;base64,"+ base64);
+        }
+    };
     return (
       <>
         <View style={styles.container}>
@@ -202,11 +222,13 @@ export default function FreePage() {
                     <Text style={{fontSize:24,fontWeight:"bold"}}>Free item</Text>
                 </View>
             <View style={{marginVertical:100}}>
-                <TouchableOpacity style={{marginVertical:20,borderWidth:1,borderRadius:10,width:300, height:100,alignItems:"center",justifyContent:"center", borderStyle:"dashed", borderColor:"lightgrey"}} onPress={handleAddPhoto}>
-                    <View style={{flexDirection:"column", justifyContent:'center',alignItems:"center"}}>
+                <TouchableOpacity style={{marginVertical:20,borderWidth:1,borderRadius:10,width:300, height:100,alignItems:"center",justifyContent:"center", borderStyle:"dashed", borderColor:"lightgrey"}} onPress={pickImage}>
+                    {!photoUrl &&
+                        <View style={{flexDirection:"column", justifyContent:'center',alignItems:"center"}}>
                         <Icon name='camera-outline' size={30}/>
                         <Text style={{fontSize:20}}>Add a Photo</Text>
-                    </View>
+                    </View>}
+                    {photoUrl && <Image source={{uri:photoUrl}} style={{width:300, height:100, borderRadius:10}}/>}
                 </TouchableOpacity>
                 <View style={{height:500}}>
                     <ScrollView>
