@@ -1,4 +1,4 @@
-export interface ShareMeals {
+export type ShareMeals ={
     user_id: string;
     title: string;
     description: string;
@@ -8,19 +8,23 @@ export interface ShareMeals {
     latitude: number;
     longitude: number;
     photoUrl: string;
+    rating: number;
 }
-export interface DiscountedMeals {
+
+export type  DiscountedMeals = {
     user_id: string;
     title: string;
     description: string;
     quantity: string;
+    instructions: string;
+    location: LocationData;
+    latitude: number;
+    longitude: number;
+    photoUrl: string;
+    rating: number;
     price: string;
-    instructions: string;
-    location: LocationData;
-    latitude: number;
-    longitude: number;
-    photoUrl: string;
 }
+
 export interface LocationData {
     Block: string;
     Road: string;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import HomeTab from '../(tabs)/home';
 import AddModal from './add';
@@ -19,6 +19,6 @@ export default function HomeTabOverlay() {
       <AddModal modalVisible={modalVisible} toggleVisible={toggleVisible}/>
       {modalVisible && <HomeTab/>}        
       {/* <RewardTab/> */}
-    </>
+    </> 
   )
 }

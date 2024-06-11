@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from '../../.expo/types/types';
-import { Icon } from 'react-native-elements';
-import { getDatabase, ref, get, set, child, onValue } from "firebase/database";
-
+import CustomButton from '@/components/CustomButton';
+import { DiscountedMeals, ShareMeals } from '@/components/addData';
 import { auth } from '@/components/auth/firebaseConfig';
+import { PressableIcon } from '@/components/navigation/PressableIcon'; // Ensure the path is correct
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useRouter } from 'expo-router';
+import { child, get, getDatabase, onValue, push, ref, update } from "firebase/database";
+import React, { useEffect, useState } from 'react';
+import { Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import MapView, { MapMarker } from 'react-native-maps';
+import { RootStackParamList } from '../../.expo/types/types';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
@@ -16,121 +19,159 @@ type Props = {
   route: HomeScreenRouteProp;
 };
 
-type Item = {
-  id: number;
-  title: string;
-  store: string;
-  location: string;
-  rating: number;
-  bookmarked: boolean; // Add bookmarked field
+export type Item = {
+  id: string;
+  type: 'Discounted' | 'Surplus';
+  item: DiscountedMeals | ShareMeals;
+  bookmarked: boolean;
 };
 
-const discountedItems: Item[] = [
-  {
-    id: 1,
-    title: 'Fruits and Vegetables',
-    store: 'Fairprice',
-    location: '63 Jurong West Central 3, #03 - 01 Jurong Point, Singapore 648331',
-    rating: 5.0,
-    bookmarked: false, // Initial bookmarked status
-  },
-  {
-    id: 2,
-    title: 'Bread',
-    store: 'BreadTalk',
-    location: '63 Jurong West Central 3, #B1 - 72 / 73, Singapore 648331',
-    rating: 4.5,
-    bookmarked: false, // Initial bookmarked status
-  },
-  // Add more discounted items as needed
-];
-
-const surplusItems: Item[] = [
-  {
-    id: 1,
-    title: 'Fruits ',
-    store: 'NTUC',
-    location: '63 Jurong West Central 3, #03 - 01 Jurong Point, Singapore 648331',
-    rating: 5.0,
-    bookmarked: false, // Initial bookmarked status
-  },
-  {
-    id: 2,
-    title: 'Bread',
-    store: 'IBread',
-    location: '63 Jurong West Central 3, #B1 - 72 / 73, Singapore 648331',
-    rating: 4.5,
-    bookmarked: false, 
-  },
-];
-
 export default function HomeTab({ navigation }: Props) {
-  const [discountedItemsState, setDiscountedItems] = useState<Item[]>(discountedItems); 
-  const [surplusItemsState, setSurplusItems] = useState<Item[]>(surplusItems); 
+  const [discountedItems, setDiscountedItems] = useState<Item[]>([]);
+  const [surplusItems, setSurplusItems] = useState<Item[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [filteredItems, setFilteredItems] = useState<Item[]>(discountedItems);
+  const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [activeTab, setActiveTab] = useState<'Discounted' | 'Surplus'>('Discounted');
+  const [CurrbookmarkedItems, setCurrBookmarkedItems] = useState<string[]>([]);
 
-  const toggleDiscountedBookmark = (id: number) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalItem, setModalItem] = useState<Item>();
+
+  useEffect(() => {
+    const db = getDatabase();
+    const discountedItemsRef = ref(db, 'items/discounted');
+    const surplusItemsRef = ref(db, 'items/surplus');
+    const userBookmarks = ref(db, 'users/' + auth.currentUser?.uid + '/myBookmarks');
+
+    onValue(discountedItemsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const items: Item[] = Object.keys(data).map(key => ({
+          id: key,
+          type: 'Discounted',
+          item: data[key],
+          bookmarked: false // Initial bookmarked status
+        }));
+        setDiscountedItems(items);
+      }
+    });
+
+    onValue(surplusItemsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const items: Item[] = Object.keys(data).map(key => ({
+          id: key,
+          type: 'Surplus',
+          item: data[key],
+          bookmarked: false // Initial bookmarked status
+        }));
+        setSurplusItems(items);
+      }
+    });
+
+    onValue(userBookmarks, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        console.log(data);
+        const temp: string[] = data
+
+        temp.forEach((id) => {
+          loadBookmarks(id);
+        });
+        setCurrBookmarkedItems(data);
+      }
+    });
+  }, []);
+
+  const loadBookmarks = (id: string) => {
     setDiscountedItems((prevItems) =>
       prevItems.map((item) =>
         item.id === id ? { ...item, bookmarked: !item.bookmarked } : item
-      )
-    );
-  };
-
-  const toggleSurplusBookmark = (id: number) => {
+      ));
     setSurplusItems((prevItems) =>
       prevItems.map((item) =>
         item.id === id ? { ...item, bookmarked: !item.bookmarked } : item
-      )
-    );
-  };
-
-  // Choose items based on the active tab
-  let chosenItems = activeTab === 'Discounted' ? discountedItemsState : surplusItemsState;
-  const bookmarkedItems = chosenItems.filter(item => item.bookmarked);
-  const nonBookmarkedItems = chosenItems.filter(item => !item.bookmarked);
-  chosenItems = [...bookmarkedItems, ...nonBookmarkedItems];
-
-  const toggleBookmark = (id: number) => {
-    if (activeTab === 'Discounted') {
-      toggleDiscountedBookmark(id);
-    } else {
-      toggleSurplusBookmark(id);
-    }
-  };
+      ));
+  }
 
   useEffect(() => {
     let filtered;
     if (activeTab === 'Discounted') {
-      filtered = discountedItemsState.filter((item) =>
-        item.title.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = discountedItems.filter((item) =>
+        item.item.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
     } else {
-      filtered = surplusItemsState.filter((item) =>
-        item.title.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = surplusItems.filter((item) =>
+        item.item.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     setFilteredItems(filtered);
-  }, [searchTerm, discountedItemsState, surplusItemsState, activeTab]);
-  
+  }, [searchTerm, discountedItems, surplusItems, activeTab]);
+
   const db = getDatabase();
-  const dbRef = ref(getDatabase());
-  useEffect(() => {
-    (async () => {
-      onValue(child(dbRef, 'items'), (snapshot) => {
+  const toggleBookmark = async (id: string) => {
+    await delay(100);
+    if (activeTab === 'Discounted') {
+      setDiscountedItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === id ? { ...item, bookmarked: !item.bookmarked } : item
+        ));
+      const item = discountedItems.find((item) => item.id === id)
+      if (item?.bookmarked) {
+        setCurrBookmarkedItems(CurrbookmarkedItems.filter((itemid) => itemid !== id));
+      } else {
+        setCurrBookmarkedItems([...CurrbookmarkedItems, id]);
+      }
+
+    } else {
+      setSurplusItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === id ? { ...item, bookmarked: !item.bookmarked } : item
+        ));
+      const item = surplusItems.find((item) => item.id === id)
+      if (item?.bookmarked) {
+        setCurrBookmarkedItems(CurrbookmarkedItems.filter((itemid) => itemid !== id));
+      } else {
+        setCurrBookmarkedItems([...CurrbookmarkedItems, id]);
+      }
+    }
+    // await delay(1000);
+    // console.log(CurrbookmarkedItems);
+    // let updates = {}
+    // updates['/myBookmarks/'] = CurrbookmarkedItems;
+    // update(ref(db,`users/${auth.currentUser?.uid}`), updates)
+  };
+
+  const reserve = async (id: string) => {
+    const dbRef = ref(getDatabase());
+    const newPostKey = push(child(ref(db, `users/${auth.currentUser?.uid}`), '/myReservations')).key;
+    const currReservation =
+      get(child(dbRef, `users/${auth.currentUser?.uid}/myReservations`)).then((snapshot) => {
+        let updates = {}
         if (snapshot.exists()) {
-          console.log("Data available");
-          const user = snapshot.val();
-          console.log(user);
-          // loadData(user);
+          console.log(snapshot.val());
+          if (!snapshot.val().includes(id)) {
+            updates['/myReservations/'] = [...snapshot.val(), id];
+          } else {
+            updates['/myReservations/'] = snapshot.val();
+          }
         } else {
-          console.log("No data available");
+          updates['/myReservations/'] = [id];
         }
+        update(ref(db, `users/${auth.currentUser?.uid}`), updates)
+      }).catch((error) => {
+        console.error(error);
       });
-    })();
-  }, []);
+
+  }
+
+  const delay = async (ms: number) => await new Promise((res) => setTimeout(res, ms));
+
+  let chosenItems = activeTab === 'Discounted' ? discountedItems : surplusItems;
+  const bookmarkedItems = chosenItems.filter(item => item.bookmarked);
+  const nonBookmarkedItems = chosenItems.filter(item => !item.bookmarked);
+  chosenItems = [...bookmarkedItems, ...nonBookmarkedItems];
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
@@ -138,11 +179,20 @@ export default function HomeTab({ navigation }: Props) {
         <TextInput
           style={styles.searchBar}
           placeholder="Search"
+          placeholderTextColor= '#a0a0a0'
           value={searchTerm}
           onChangeText={setSearchTerm}
         />
-        <Icon name="location-pin" type="material" color="#000" />
-        <Icon name="bookmark-outline" type="material" color="#000" />
+        <PressableIcon
+          name="location-outline"
+          size={24}
+          onPress={() => router.push('/locationPage')}
+        />
+        <PressableIcon
+          name="journal-outline"
+          size={24}
+          onPress={() => router.push('/myReservations')}
+        />
       </View>
       <View style={styles.tabContainer}>
         <TouchableOpacity
@@ -162,25 +212,112 @@ export default function HomeTab({ navigation }: Props) {
           <Text style={activeTab === 'Surplus' ? styles.tabTextActive : styles.tabTextInactive}>Surplus</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        {chosenItems.map((item) => (
-          <View key={item.id} style={styles.itemContainer}>
-            <View style={styles.itemHeader}>
-              <Text style={styles.itemTitle}>{item.title}</Text>
-              <TouchableOpacity onPress={() => toggleBookmark(item.id)}>
-                <Icon
-                  name={item.bookmarked ? 'bookmark' : 'bookmark-outline'}
-                  type="material"
-                  color="#000"
-                />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.itemTextContainer}>
-              <Text style={styles.itemStore}>{item.store}</Text>
-              <Text style={styles.itemLocation}>{item.location}</Text>
-              <Text style={styles.itemRating}>{item.rating} ⭐️</Text>
+      <Modal visible={modalVisible} transparent={true}>
+        <View style={{ width: "100%", height: "100%", justifyContent: 'center', alignItems: "center" }}>
+          <TouchableOpacity
+            onPress={() => setModalVisible(false)}
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.5)" }}>
+          </TouchableOpacity>
+          <View style={{ width: "85%", height: "80%", backgroundColor: "white", borderRadius: 10, shadowRadius: 10 }}>
+            <View style={{ padding: 10, height: "100%" }}>
+              <PressableIcon style={{ marginTop: 20 }} onPress={() => { setModalVisible(false) }} size={30} name="arrow-back-outline" />
+              {modalItem && (
+                <View style={{ width: "100%", height: '80%' }}>
+                  <View style={[styles.itemHeader, { width: '100%', height: "15%", flexDirection: "row", alignItems: "flex-start" }]}>
+                    <View style={[styles.itemTextContainer, { width: "80%" }]}>
+                      <Text style={[styles.itemTitle, { fontSize: 24 }]}>{modalItem.item.title}</Text>
+                      <Text style={[styles.itemLocation, { flexWrap: "wrap" }]}>
+                        <Text>{modalItem.item.location.Road}, </Text>
+                        <Text>{modalItem.item.location.Block}, </Text>
+                        <Text>{modalItem.item.location.UnitNumber}, </Text>
+                        <Text>{modalItem.item.location.PostalCode}</Text>
+                      </Text>
+                    </View>
+                    <Text style={[styles.itemRating, { fontSize: 20 }]}>{modalItem.item.rating.toFixed(1)} ⭐</Text>
+                  </View>
+                  <View style={{ width: "100%", height: "100%" }}>
+                    <ScrollView>
+                      <Image source={{ uri: modalItem.item.photoUrl }} style={{ marginBottom: 10, borderWidth: 1, borderColor: "black", width: "100%", height: 200 }} />
+                      <View style={styles.itemContainer}>
+                        <Text style={styles.itemTitle}>Description</Text>
+                        <Text>{modalItem.item.description}</Text>
+                      </View>
+                      <View style={styles.itemContainer}>
+                        <Text style={styles.itemTitle}>Quantity</Text>
+                        <Text>{modalItem.item.quantity}</Text>
+                      </View>
+                      {modalItem.type === "Discounted" &&
+                        <View style={styles.itemContainer}>
+                          <Text style={styles.itemTitle}>Price</Text>
+                          {/* {const s = modalItem.item as DiscountedMeals }
+                          <Text>{s.price}</Text> */}
+                        </View>
+                      }
+                      <View style={styles.itemContainer}>
+                        <Text style={styles.itemTitle}>Instructions</Text>
+                        <Text>{modalItem.item.instructions}</Text>
+                      </View>
+                      <View style={styles.itemContainer}>
+                        <Text style={styles.itemTitle}>Location</Text>
+                        <MapView style={{ width: "100%", height: 200, borderWidth: 1, borderColor: "black" }} region={{ latitude: modalItem.item.latitude, longitude: modalItem.item.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 }}>
+                          <MapMarker coordinate={{ latitude: modalItem.item.latitude, longitude: modalItem.item.longitude }} />
+                        </MapView>
+                      </View>
+                      <CustomButton
+                        text="Reserve"
+                        onPress={() => {
+                          reserve(modalItem.id);
+                          setModalVisible(false);
+                          router.push('/myReservations');
+                        }}
+                        type=""
+                        style={{
+                          buttonContainer: {
+                            width: "100%",
+                            backgroundColor: "#3BAE6F"
+                          },
+                          text: {
+                            color: "white"
+                          }
+                        }}
+                      />
+                    </ScrollView>
+                  </View>
+                </View>
+              )}
             </View>
           </View>
+        </View>
+      </Modal>
+      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        {chosenItems.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            style={styles.itemContainer}
+            onPress={() => {
+              console.log("Clicked", item.id)
+              setModalItem(item);
+              setModalVisible(true);
+            }}>
+            <View style={styles.itemHeader}>
+              <Text style={styles.itemTitle}>{item.item.title}</Text>
+              <PressableIcon
+                name={item.bookmarked ? 'bookmark' : 'bookmark-outline'}
+                size={24}
+                onPress={() => toggleBookmark(item.id)}
+              />
+            </View>
+            <View style={styles.itemTextContainer}>
+              <Text style={styles.itemStore}>{item.item.description}</Text>
+              <Text style={styles.itemLocation}>
+                {item.item.location.Road ? item.item.location.Road : ""},
+                {item.item.location.Block ? item.item.location.Block : ""},
+                {item.item.location.UnitNumber ? item.item.location.UnitNumber : ""},
+                {item.item.location.PostalCode ? item.item.location.PostalCode : ""}
+              </Text>
+              <Text style={styles.itemRating}>{item.item.rating} ⭐️</Text>
+            </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
@@ -191,6 +328,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+    marginTop: 20,
   },
   header: {
     width: '100%',
@@ -207,9 +345,10 @@ const styles = StyleSheet.create({
     height: 30,
     borderColor: '#dcdcdc',
     borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 10,
     paddingLeft: 16,
     marginRight: 8,
+    backgroundColor: '#fff',
   },
   tabContainer: {
     flexDirection: 'row',
