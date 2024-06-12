@@ -1,5 +1,5 @@
 import * as Location from 'expo-location';
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { child, get, getDatabase, onValue, push, ref } from "firebase/database";
 import React, { useEffect, useState } from "react";
 import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -136,20 +136,16 @@ export default function LocationPage() {
 
 
     return (
-        <View style={styles.container}>
-            <View style={styles.navigation}>
-                <PressableIcon onPress={() => { router.canGoBack() ? router.back() : {} }} size={30} name="arrow-back-outline" />
-            </View>
-            <View style={[styles.navigation, { marginTop: 110, width: "100%", alignItems: "center", flexDirection: "column" }]}>
-                <Text style={[styles.paragraph_Bold, { alignSelf: "flex-start", marginLeft: 30 }]}>Set your location</Text>
+        <><Stack.Screen options={{ title: '', headerBackTitleVisible: false }} /><View style={styles.container}>
+            <View style={[styles.navigation, { backgroundColor: "white", width: "100%", alignItems: "center", flexDirection: "column" }]}>
+                <Text style={[styles.paragraph_Bold, { alignSelf: "flex-start", width: "100%", textAlign: "center" }]}>Map</Text>
                 <View>
                     <Input
                         type="Location"
                         placeholder="Enter your postal code"
-                        style={{ inputBox: { width: 350, borderWidth: 1, borderColor: "black" }, input: {} }}
+                        style={{ inputBox: { marginTop: 10, width: 350, borderWidth: 1, borderColor: "black" }, input: {} }}
                         header={false}
-                        onChangeText={(e) => search(e)}
-                    />
+                        onChangeText={(e) => search(e)} />
                 </View>
             </View>
             <View style={[{ marginTop: 110, width: "100%", height: 950, zIndex: -10, position: "absolute", bottom: 0 }]}>
@@ -160,17 +156,17 @@ export default function LocationPage() {
                                 console.log("Clicked", item.id),
                                     setModalItem(item);
                                 setModalVisible(true);
-                            }}><Marker
-                            key={item.id}
-                            coordinate={{
-                                latitude: item.item.latitude,
-                                longitude: item.item.longitude,
-                            }}
-                        >
-                            <View style={styles.marker}>
-                                <Image src={item.item.photoUrl} style={styles.markerImage}></Image>
-                            </View>
-                        </Marker>
+                            } }><Marker
+                                key={item.id}
+                                coordinate={{
+                                    latitude: item.item.latitude,
+                                    longitude: item.item.longitude,
+                                }}
+                            >
+                                <View style={styles.marker}>
+                                    <Image src={item.item.photoUrl} style={styles.markerImage}></Image>
+                                </View>
+                            </Marker>
                         </TouchableOpacity>
                     ))}
                     {surplusItems && surplusItems.map((item) => (
@@ -179,7 +175,7 @@ export default function LocationPage() {
                                 console.log("Clicked", item.id),
                                     setModalItem(item);
                                 setModalVisible(true);
-                            }}>
+                            } }>
                             <Marker
                                 key={item.id}
                                 coordinate={{
@@ -203,7 +199,7 @@ export default function LocationPage() {
                     </TouchableOpacity>
                     <View style={{ width: "85%", height: "80%", backgroundColor: "white", borderRadius: 10, shadowRadius: 10 }}>
                         <View style={{ padding: 10, height: "100%" }}>
-                            <PressableIcon style={{ marginTop: 20 }} onPress={() => { setModalVisible(false) }} size={30} name="arrow-back-outline" />
+                            <PressableIcon style={{ marginTop: 20 }} onPress={() => { setModalVisible(false); } } size={30} name="arrow-back-outline" />
                             {modalItem && (
                                 <View style={{ width: "100%", height: '80%' }}>
                                     <View style={[styles.itemHeader, { width: '100%', height: "15%", flexDirection: "row", alignItems: "flex-start" }]}>
@@ -216,7 +212,7 @@ export default function LocationPage() {
                                                 <Text>{modalItem.item.location.PostalCode}</Text>
                                             </Text>
                                         </View>
-                                        <Text style={[styles.itemRating, { fontSize: 20 }]}>{modalItem.item.rating.toFixed(1)} ⭐</Text>
+                                        <Text style={[styles.itemRating, { fontSize: 20 }]}>5.0 ⭐</Text>
                                     </View>
                                     <View style={{ width: "100%", height: "100%" }}>
                                         <ScrollView>
@@ -233,9 +229,8 @@ export default function LocationPage() {
                                                 <View style={styles.itemContainer}>
                                                     <Text style={styles.itemTitle}>Price</Text>
                                                     {/* {const s = modalItem.item as DiscountedMeals }
-                          <Text>{s.price}</Text> */}
-                                                </View>
-                                            }
+<Text>{s.price}</Text> */}
+                                                </View>}
                                             <View style={styles.itemContainer}>
                                                 <Text style={styles.itemTitle}>Instructions</Text>
                                                 <Text>{modalItem.item.instructions}</Text>
@@ -252,7 +247,7 @@ export default function LocationPage() {
                                                     reserve(modalItem.id);
                                                     setModalVisible(false);
                                                     router.push('/myReservations');
-                                                }}
+                                                } }
                                                 type=""
                                                 style={{
                                                     buttonContainer: {
@@ -262,8 +257,7 @@ export default function LocationPage() {
                                                     text: {
                                                         color: "white"
                                                     }
-                                                }}
-                                            />
+                                                }} />
                                         </ScrollView>
                                     </View>
                                 </View>
@@ -272,7 +266,7 @@ export default function LocationPage() {
                     </View>
                 </View>
             </Modal>
-        </View>
+        </View></>
 
     );
 };
@@ -349,7 +343,6 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 0,
         left: 0,
-        marginTop: 70,
         width: "100%",
         flexDirection: "row",
         justifyContent: "flex-start",

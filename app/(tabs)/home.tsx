@@ -230,7 +230,7 @@ export default function HomeTab({ navigation }: Props) {
                         <Text>{modalItem.item.location.PostalCode}</Text>
                       </Text>
                     </View>
-                    <Text style={[styles.itemRating, { fontSize: 20 }]}>{modalItem.item.rating.toFixed(1)} ⭐</Text>
+                    <Text style={[styles.itemRating, { fontSize: 20 }]}>5.0 ⭐</Text>
                   </View>
                   <View style={{ width: "100%", height: "100%" }}>
                     <ScrollView>
