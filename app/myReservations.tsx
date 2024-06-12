@@ -81,14 +81,18 @@ const Reservations: React.FC = () => {
                         return temp[0];
                     }else {
                         const temp2 = surplusItems.filter((item) => {return (item.id == key)});
-                        return temp2[0];
+                        if(temp2.length > 0){
+                            return temp2[0];
+                        } else {
+                            return null;
+                        }
                     }                    
                 })
-                // console.log('TempArr:',tempArr.length);
-                return tempArr;
+                // console.log('TempArr:',tempArr.filter((item) => {return item !== null}).length);
+                return tempArr; 
             }}).catch((error) => {console.error('Error fetching data:', error);}) 
         // console.log('TempArr:',tempArr.length);
-        return tempArr;
+        return tempArr; 
     }
     useEffect(() => {
         (async () => {
@@ -164,7 +168,7 @@ const Reservations: React.FC = () => {
                     <View>
                     {reservations.length>0 && ( Object(reservations).map(async (reservations:Item) =>{
                         const item = await reservations;
-                        // console.log(item);
+                        console.log(item);
                         
                         return(
                             <View style={{marginBottom:10}}>
