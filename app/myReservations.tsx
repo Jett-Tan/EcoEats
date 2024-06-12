@@ -92,7 +92,8 @@ const Reservations: React.FC = () => {
     }
     useEffect(() => {
         (async () => {
-            loadData().then(async (data) => {
+            await(delay(100));
+            await loadData().then(async (data) => {
                 await setReservations(await data);
             })
         })();        
@@ -146,7 +147,7 @@ const Reservations: React.FC = () => {
             {/* </View> */}  
             <View style={styles.container}>
             <View style={styles.navigation}>
-                <PressableIcon onPress={() => {router.push('./(tabs)/home')}} size={30} name="arrow-back-outline" />
+                <PressableIcon onPress={() => {router.push('/(tabs)/home')}} size={30} name="arrow-back-outline" />
             </View>              
             <View style={{alignItems:"center",position: "absolute",
             top: 0,
