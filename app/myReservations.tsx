@@ -1,12 +1,10 @@
+import { DiscountedMeals, ShareMeals } from '@/components/addData';
 import { auth } from '@/components/auth/firebaseConfig';
 import { PressableIcon } from '@/components/navigation/PressableIcon';
 import { useRouter } from 'expo-router';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { child, get, getDatabase, ref, onValue, set } from 'firebase/database';
+import { child, get, getDatabase, onValue, ref } from 'firebase/database';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
-import { DiscountedMeals, ShareMeals } from '@/components/addData';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // interface Reservation {
 //     id: string;
 //     item:Item;
@@ -157,7 +155,7 @@ const Reservations: React.FC = () => {
             top: 0,
             left: 0,
             marginLeft:"35%",
-            width:"30%",
+            width:"40%",
             marginTop:70,
             height:30,
             justifyContent:"center"}}>
