@@ -57,7 +57,7 @@ export default function Index() {
                 value={password} 
                 onChangeText={setPassword} 
             />
-            <CustomButton text="Login" style={{buttonContainer: styles.button,button: {},text: styles.button_Text}} type="" onPress={handleLogin}/>
+            <CustomButton text="Login" style={{buttonContainer: styles.button,button: {},text: styles.button_Text}} type="" onPress={handleLogin} />
             {loginError && <Text style={{color:"red", fontSize:12}}>{loginError}</Text>}
             <Text style={[styles.paragraph_Box,{marginTop:24}]}>
                 <Text style={styles.paragraph}>By signing up, you agree to our </Text>
