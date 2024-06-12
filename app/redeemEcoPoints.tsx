@@ -74,8 +74,8 @@ const RedeemEcoPoints: React.FC = () => {
                                 Are you sure you want to redeem {selectedReward.name} for {selectedReward.pointsRequired} points?
                             </Text>
                             <View style={styles.modalButtons}>
-                                <Button title="Yes" onPress={confirmRedemption} />
                                 <Button title="No" onPress={() => setModalVisible(false)} />
+                                <Button title="Yes" onPress={confirmRedemption} />
                             </View>
                         </View>
                     </View>

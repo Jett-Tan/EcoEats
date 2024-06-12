@@ -9,9 +9,9 @@ import Input from "@/components/Input";
 import Interests, { preferences } from '@/components/Interests';
 import { auth } from '@/components/auth/firebaseConfig';
 import { Icon } from "@/components/navigation/Icon";
+import { router } from "expo-router";
 import BookmarkTab from '../savedTab';
 import StarTab from '../starTab';
-import { router } from "expo-router";
 
 
 export default function ProfilePage() {
@@ -210,8 +210,7 @@ export default function ProfilePage() {
           <Text style={styles.headerText}>{firstName} {lastName}</Text>
         </View>
         <View style={styles.rating}>
-          <Text style={styles.ratingText}>{userStars.toFixed(1)}</Text>
-          <Text style={styles.starText}>⭐</Text>
+          <Text style={styles.starText}>5.0 ⭐</Text>
         </View>
       </View>
       <View style={styles.subTitle}>
