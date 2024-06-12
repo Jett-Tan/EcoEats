@@ -1,6 +1,6 @@
 import * as Location from 'expo-location';
 import { Stack, useRouter } from 'expo-router';
-import { child, get, getDatabase, onValue, push, ref } from "firebase/database";
+import { child, get, getDatabase, onValue, push, ref,update } from "firebase/database";
 import React, { useEffect, useState } from "react";
 import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MapView, { MapMarker, Marker } from 'react-native-maps';
@@ -56,7 +56,7 @@ export default function LocationPage() {
             onValue(discountedItemsRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    console.log(data);
+                    // console.log(data);
                     const items: Item[] = Object.keys(data).map(key => ({
                         id: key,
                         type: 'Discounted',
@@ -70,7 +70,7 @@ export default function LocationPage() {
             onValue(surplusItemsRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    console.log(data);
+                    // console.log(data);
                     const items: Item[] = Object.keys(data).map(key => ({
                         id: key,
                         type: 'Surplus',
@@ -84,7 +84,7 @@ export default function LocationPage() {
     }, []);
 
     const search = async (val: string) => {
-        console.log(val);
+        // console.log(val);
         await fetch(
             "https://www.onemap.gov.sg/api/common/elastic/search?searchVal=" + val + "&returnGeom=Y&getAddrDetails=Y&pageNum=1",
             {
@@ -94,7 +94,7 @@ export default function LocationPage() {
                 },
             }).then(async (response) => {
                 const data = await response.json();
-                console.log(data);
+                // console.log(data);
 
                 setLatitude(Number.parseFloat(data.results[0].LATITUDE));
                 setLongitude(Number.parseFloat(data.results[0].LONGITUDE));
@@ -113,12 +113,12 @@ export default function LocationPage() {
 
     const reserve = async (id: string) => {
         const dbRef = ref(getDatabase());
-        const newPostKey = push(child(ref(db, `users/${auth.currentUser?.uid}`), '/myReservations')).key;
+        const newPostKey = push(child(ref(getDatabase(), `users/${auth.currentUser?.uid}`), '/myReservations')).key;
         const currReservation =
             get(child(dbRef, `users/${auth.currentUser?.uid}/myReservations`)).then((snapshot) => {
-                let updates = {}
+                let updates:any = {}
                 if (snapshot.exists()) {
-                    console.log(snapshot.val());
+                    // console.log(snapshot.val());
                     if (!snapshot.val().includes(id)) {
                         updates['/myReservations/'] = [...snapshot.val(), id];
                     } else {
@@ -127,7 +127,7 @@ export default function LocationPage() {
                 } else {
                     updates['/myReservations/'] = [id];
                 }
-                update(ref(db, `users/${auth.currentUser?.uid}`), updates)
+                update(ref(getDatabase(), `users/${auth.currentUser?.uid}`), updates)
             }).catch((error) => {
                 console.error(error);
             });
@@ -145,7 +145,7 @@ export default function LocationPage() {
                         placeholder="Enter your postal code"
                         style={{ inputBox: { marginTop: 10, width: 350, borderWidth: 1, borderColor: "black" }, input: {} }}
                         header={false}
-                        onChangeText={(e) => search(e)} />
+                        onChangeText={(e:string) => search(e)} />
                 </View>
             </View>
             <View style={[{ marginTop: 110, width: "100%", height: 950, zIndex: -10, position: "absolute", bottom: 0 }]}>
@@ -153,7 +153,7 @@ export default function LocationPage() {
                     {discountedItems && discountedItems.map((item) => (
                         <TouchableOpacity style={styles.markerContainer}
                             onPress={() => {
-                                console.log("Clicked", item.id),
+                                // console.log("Clicked", item.id),
                                     setModalItem(item);
                                 setModalVisible(true);
                             } }><Marker
