@@ -36,6 +36,7 @@ export default function HomeTab({ navigation }: Props) {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalItem, setModalItem] = useState<Item>();
+  const [userRating, setUserRating] = useState(null);
 
   useEffect(() => {
     const db = getDatabase();
@@ -108,6 +109,7 @@ export default function HomeTab({ navigation }: Props) {
     setFilteredItems(filtered);
   }, [searchTerm, discountedItems, surplusItems, activeTab]);
 
+  
   const db = getDatabase();
   const toggleBookmark = async (id: string) => {
     await delay(100);
@@ -319,7 +321,7 @@ export default function HomeTab({ navigation }: Props) {
                 {item.item.location.UnitNumber ? item.item.location.UnitNumber : ""},
                 {item.item.location.PostalCode ? item.item.location.PostalCode : ""}
               </Text>
-              <Text style={styles.itemRating}>{item.item.rating} ⭐️</Text>
+              <Text style={styles.itemRating}>5.0 ⭐️</Text>
             </View>
           </TouchableOpacity>
         ))}
