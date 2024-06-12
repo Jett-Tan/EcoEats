@@ -1,4 +1,3 @@
-import { Stack } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
@@ -18,7 +17,6 @@ const savedItems: SavedItem[] = [
 
 const SavedTab: React.FC = () => {
   return (
-    <><Stack.Screen options={{ title: 'Oops!', headerBackTitleVisible: false }} />
     <View style={styles.container}>
       <View style={styles.grid}>
         {savedItems.map((item, index) => (
@@ -27,7 +25,7 @@ const SavedTab: React.FC = () => {
           </View>
         ))}
       </View>
-    </View></>
+    </View>
   );
 };
 
