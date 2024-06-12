@@ -34,9 +34,6 @@ export default function Index() {
             setLoginError(errorCode);
             console.log('====================================');
         })
-        return{
-            style:{backgroundColor:"#0000"}
-        }
     }
     return (
         <View style={styles.container}>
