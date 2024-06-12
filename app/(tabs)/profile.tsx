@@ -16,16 +16,16 @@ import { router } from "expo-router";
 
 export default function ProfilePage() {
   
-  const [firstName, setFirstName] = useState('John');
-  const [lastName, setLastName] = useState('Low');
+  const [firstName, setFirstName] = useState('Loading');
+  const [lastName, setLastName] = useState('...');
   const [dob, setDOB] = useState('01/01/2000');
   const [gender, setGender] = useState('Male');
   const [description, setDescription] = useState('BrainFried is the best!');
   const [userStars,setUserStars] = useState(0);
   const [myPreferences, setMyPreferences] = useState<preferences[]>([]); 
   
-  const [firstNameEdit, setFirstNameEdit] = useState('John');
-  const [lastNameEdit, setLastNameEdit] = useState('Low');
+  const [firstNameEdit, setFirstNameEdit] = useState('Loading');
+  const [lastNameEdit, setLastNameEdit] = useState('...');
   const [dobEdit, setDOBEdit] = useState('01/01/2000');
   const [genderEdit, setGenderEdit] = useState('Male');
   const [descriptionEdit, setDescriptionEdit] = useState('BrainFried is the best!');
