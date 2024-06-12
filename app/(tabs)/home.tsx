@@ -330,7 +330,7 @@ export default function HomeTab() {
           {chosenItems && chosenItems.length === 0 && (
             <Text style={{textAlign:"center"}}>Loading...</Text>
             )}
-          {chosenItems && chosenItems.map((item) => (
+          {filteredItems && filteredItems.map((item) => (
             <TouchableOpacity
               key={item.id}
               style={styles.itemContainer}
