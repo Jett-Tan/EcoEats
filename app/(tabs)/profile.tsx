@@ -11,6 +11,7 @@ import { auth } from '@/components/auth/firebaseConfig';
 import { Icon } from "@/components/navigation/Icon";
 import BookmarkTab from '../savedTab';
 import StarTab from '../starTab';
+import { router } from "expo-router";
 
 
 export default function ProfilePage() {
@@ -235,13 +236,13 @@ export default function ProfilePage() {
             }} /> 
           <CustomButton 
             type="" 
-            text="Share Profile" 
+            text="Log Out" 
             style={{
               buttonContainer: {width:170,minWidth:100, backgroundColor:"#3BAE6F"},
               button: {},
               text: {color:"white"}
             }} 
-            onPress={() => {console.log("share")}} /> 
+            onPress={() => {auth.signOut(); router.dismissAll();}} /> 
           <Modal
             animationType="slide"
             transparent={true}
