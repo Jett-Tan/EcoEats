@@ -101,10 +101,10 @@ export default function SellPage() {
             }).catch((error) => {
                 console.log("error");
                 const locations:LocationData = {
-                    Block: "data.GeocodeInfo[0].BLOCK",
-                    Road: "data.GeocodeInfo[0].ROAD",
-                    PostalCode: "data.GeocodeInfo[0].POSTALCODE",
-                    UnitNumber:"location"
+                    Block: "",
+                    Road: "",
+                    PostalCode: "",
+                    UnitNumber:""
                 };
                 return locations;});
             
