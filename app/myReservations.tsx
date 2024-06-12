@@ -187,7 +187,7 @@ const Reservations: React.FC = () => {
                                     {item.item.location.UnitNumber ? item.item.location.UnitNumber : ""},
                                     {item.item.location.PostalCode ? item.item.location.PostalCode : ""}
                                 </Text>
-                                <Text style={styles.itemRating}>{item.item.rating} ⭐️</Text>
+                                <Text style={styles.itemRating}>{item.item.rating.toFixed(1)} ⭐️</Text>
                                 </View>
                             </TouchableOpacity>
                             </View>
