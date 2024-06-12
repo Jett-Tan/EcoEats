@@ -73,7 +73,6 @@ export default function HomeTab({ navigation }: Props) {
     onValue(userBookmarks, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        console.log(data);
         const temp: string[] = data
 
         temp.forEach((id) => {
@@ -109,8 +108,6 @@ export default function HomeTab({ navigation }: Props) {
     setFilteredItems(filtered);
   }, [searchTerm, discountedItems, surplusItems, activeTab]);
 
-  
-  const db = getDatabase();
   const toggleBookmark = async (id: string) => {
     await delay(100);
     if (activeTab === 'Discounted') {
@@ -138,9 +135,9 @@ export default function HomeTab({ navigation }: Props) {
       }
     }
     // await delay(1000);
-    // console.log(CurrbookmarkedItems);
+    // console.log(CurrBookmarkedItems);
     // let updates = {}
-    // updates['/myBookmarks/'] = CurrbookmarkedItems;
+    // updates['/myBookmarks/'] = CurrBookmarkedItems;
     // update(ref(db,`users/${auth.currentUser?.uid}`), updates)
   };
 
@@ -170,9 +167,6 @@ export default function HomeTab({ navigation }: Props) {
   const delay = async (ms: number) => await new Promise((res) => setTimeout(res, ms));
 
   let chosenItems = activeTab === 'Discounted' ? discountedItems : surplusItems;
-  const bookmarkedItems = chosenItems.filter(item => item.bookmarked);
-  const nonBookmarkedItems = chosenItems.filter(item => !item.bookmarked);
-  chosenItems = [...bookmarkedItems, ...nonBookmarkedItems];
   const router = useRouter();
 
   return (
@@ -294,43 +288,42 @@ export default function HomeTab({ navigation }: Props) {
       </Modal>
 
       <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.scrollViewContainer}>
-        {chosenItems.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={styles.itemContainer}
-            onPress={() => {
-              console.log("Clicked", item.id)
-              setModalItem(item);
-              setModalVisible(true);
-            }}>
-            <Image src={item.item.photoUrl} style={{ marginBottom: 10, borderWidth: 1, borderColor: "black", width: "100%", height: 200 }}></Image>
-            <View style={styles.itemHeader}>
-              <Text style={styles.itemTitle}>{item.item.title}</Text>
-              <PressableIcon
-                name={item.bookmarked ? 'bookmark' : 'bookmark-outline'}
-                size={24}
-                onPress={() => toggleBookmark(item.id)}
-              />
-            </View>
-            <View style={styles.itemTextContainer}>
-              <Text style={styles.itemStore}>{item.item.description}</Text>
-              <Text style={styles.itemLocation}>
-                {item.item.location.Road ? item.item.location.Road : ""},
-                {item.item.location.Block ? item.item.location.Block : ""},
-                {item.item.location.UnitNumber ? item.item.location.UnitNumber : ""},
-                {item.item.location.PostalCode ? item.item.location.PostalCode : ""}
-              </Text>
-              <Text style={styles.itemRating}>5.0 ⭐️</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+        <ScrollView style={styles.scrollViewContainer}>
+          {chosenItems.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.itemContainer}
+              onPress={() => {
+                console.log("Clicked", item.id)
+                setModalItem(item);
+                setModalVisible(true);
+              }}>
+              <Image src={item.item.photoUrl} style={{ marginBottom: 10, borderWidth: 1, borderColor: "black", width: "100%", height: 200 }}></Image>
+              <View style={styles.itemHeader}>
+                <Text style={styles.itemTitle}>{item.item.title}</Text>
+                <PressableIcon
+                  name={item.bookmarked ? 'bookmark' : 'bookmark-outline'}
+                  size={24}
+                  onPress={() => toggleBookmark(item.id)}
+                />
+              </View>
+              <View style={styles.itemTextContainer}>
+                <Text style={styles.itemStore}>{item.item.description}</Text>
+                <Text style={styles.itemLocation}>
+                  {item.item.location.Road ? item.item.location.Road : ""},
+                  {item.item.location.Block ? item.item.location.Block : ""},
+                  {item.item.location.UnitNumber ? item.item.location.UnitNumber : ""},
+                  {item.item.location.PostalCode ? item.item.location.PostalCode : ""}
+                </Text>
+                <Text style={styles.itemRating}>5.0 ⭐️</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </SafeAreaView>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   safeArea: {
