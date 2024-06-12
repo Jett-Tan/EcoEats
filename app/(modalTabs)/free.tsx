@@ -137,7 +137,18 @@ export default function FreePage() {
         dataValidation.instructionsError(instructions);
         dataValidation.locationError(location);
         dataValidation.photoUrlError(photoUrl);
-        if (titleError === "" && descriptionError === "" && quantityError === "" && instructionsError === "" && locationError === "" && photoUrlError === "") {
+        if (title!==""&& 
+            titleError === "" && 
+            descriptionError === "" &&
+            quantityError === "" &&
+            instructionsError === "" &&
+            locationError === "" &&
+            photoUrlError === "" &&
+            descriptionError === "" && 
+            quantityError === "" && 
+            instructionsError === "" && 
+            locationError === "" && 
+            photoUrlError === "") {
             return true;
         } else {
             return false;

@@ -139,7 +139,18 @@ export default function SellPage() {
         dataValidation.instructionsError(instructions);
         dataValidation.locationError(location);
         dataValidation.photoUrlError(photoUrl);
-        if (titleError === "" && descriptionError === "" && quantityError === "" && priceError === "" && instructionsError === "" && locationError === "" && photoUrlError === "") {
+        if (title!==""&& 
+            titleError === "" && 
+            descriptionError === "" &&
+            quantityError === "" &&
+            instructionsError === "" &&
+            locationError === "" &&
+            photoUrlError === "" &&
+            descriptionError === "" && 
+            quantityError === "" && 
+            instructionsError === "" && 
+            locationError === "" && 
+            photoUrlError === "") {
             return true;
         } else {
             return false;
