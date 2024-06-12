@@ -5,11 +5,12 @@ import { PressableIcon } from '@/components/navigation/PressableIcon'; // Ensure
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useRouter } from 'expo-router';
-import { child, get, getDatabase, onValue, push, ref, update } from "firebase/database";
+import { child, get, getDatabase, onValue, push, ref, set, update } from "firebase/database";
 import React, { useEffect, useState } from 'react';
 import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MapView, { MapMarker } from 'react-native-maps';
 import { RootStackParamList } from '../../.expo/types/types';
+import * as Location from 'expo-location';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 type HomeScreenRouteProp = RouteProp<RootStackParamList, 'Home'>;
@@ -26,14 +27,19 @@ export type Item = {
   bookmarked: boolean;
 };
 
-export default function HomeTab({ navigation }: Props) {
+type Coordinate = {
+  longitude: number;
+  latitude: number;
+}
+
+export default function HomeTab() {
   const [discountedItems, setDiscountedItems] = useState<Item[]>([]);
   const [surplusItems, setSurplusItems] = useState<Item[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [activeTab, setActiveTab] = useState<'Discounted' | 'Surplus'>('Discounted');
   const [CurrbookmarkedItems, setCurrBookmarkedItems] = useState<string[]>([]);
-
+  const [currLocation, setCurrLocation] = useState<Coordinate>({ latitude: 1.3521, longitude: 103.8198 });
   const [modalVisible, setModalVisible] = useState(false);
   const [modalItem, setModalItem] = useState<Item>();
   const [userRating, setUserRating] = useState(null);
@@ -43,8 +49,8 @@ export default function HomeTab({ navigation }: Props) {
     const discountedItemsRef = ref(db, 'items/discounted');
     const surplusItemsRef = ref(db, 'items/surplus');
     const userBookmarks = ref(db, 'users/' + auth.currentUser?.uid + '/myBookmarks');
-
-    onValue(discountedItemsRef, (snapshot) => {
+    
+    onValue(discountedItemsRef, async (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const items: Item[] = Object.keys(data).map(key => ({
@@ -53,11 +59,12 @@ export default function HomeTab({ navigation }: Props) {
           item: data[key],
           bookmarked: false // Initial bookmarked status
         }));
-        setDiscountedItems(items);
+        await loadNearest(items,true);
+        // setDiscountedItems(items);
       }
     });
 
-    onValue(surplusItemsRef, (snapshot) => {
+    onValue(surplusItemsRef, async (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const items: Item[] = Object.keys(data).map(key => ({
@@ -66,6 +73,7 @@ export default function HomeTab({ navigation }: Props) {
           item: data[key],
           bookmarked: false // Initial bookmarked status
         }));
+        await loadNearest(items,false);
         setSurplusItems(items);
       }
     });
@@ -81,7 +89,35 @@ export default function HomeTab({ navigation }: Props) {
         setCurrBookmarkedItems(data);
       }
     });
+
   }, []);
+
+  const loadNearest = async (x :Item[],discounted:boolean) => {
+    let locationa = await Location.getCurrentPositionAsync({ 
+      accuracy: Location.LocationAccuracy.High, 
+      timeInterval: 100, 
+      distanceInterval: 1 
+    });
+    setCurrLocation({
+      latitude:locationa.coords.latitude,
+      longitude: locationa.coords.longitude
+    });
+    const temp = await x.sort(
+      (a,b) => {
+        return Math.sqrt(
+          (a.item.latitude-currLocation.latitude)**2 + 
+          (a.item.longitude-currLocation.longitude)**2
+        ) - 
+          Math.sqrt(
+            (b.item.latitude-currLocation.latitude)**2 + 
+            (b.item.longitude-currLocation.longitude)**2)
+        });
+    if(discounted){
+      setDiscountedItems(temp);
+    }else{
+      setSurplusItems(temp);
+    }
+  }
 
   const loadBookmarks = (id: string) => {
     setDiscountedItems((prevItems) =>
