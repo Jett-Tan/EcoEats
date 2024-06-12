@@ -129,7 +129,7 @@ const Reservations: React.FC = () => {
 
     return (
         <>
-            <Stack.Screen options={{ title: 'My Reservations!', headerBackTitleVisible: false, headerSearchBarOptions: { placeholder: 'Search' } }} />
+            <Stack.Screen options={{ title: 'My Reservations', headerBackTitleVisible: false, headerSearchBarOptions: { placeholder: 'Search' } }} />
             <View style={styles.header}>
                 <TextInput
                     style={styles.searchBar}
