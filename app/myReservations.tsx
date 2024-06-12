@@ -1,203 +1,184 @@
+import { auth } from '@/components/auth/firebaseConfig';
 import { PressableIcon } from '@/components/navigation/PressableIcon';
 import { Stack } from 'expo-router';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { child, get, getDatabase, ref } from 'firebase/database';
+import { child, get, getDatabase, ref, onValue, set } from 'firebase/database';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import { DiscountedMeals, ShareMeals } from '@/components/addData';
+// interface Reservation {
+//     id: string;
+//     item:Item;
+    // dish: string;
+    // image: string;
+    // address: string;
+    // rating: number;
+// }
 
-interface Reservation {
-    id: string;
-    dish: string;
-    image: string;
-    address: string;
-    rating: number;
-}
-
-interface Item {
-    title: string;
-    location: {
-        Road: string;
-        Block: string;
-        UnitNumber: string;
-        PostalCode: string;
-    };
-    rating: number;
-    photoUrl: string;
-    description: string;
-    quantity: number;
-    latitude: number;
-    longitude: number;
-    instructions: string;
-}
+export type Item = {
+  id: string;
+  type: 'Discounted' | 'Surplus';
+  item: DiscountedMeals | ShareMeals;
+};
 
 const Reservations: React.FC = () => {
-    const [reservations, setReservations] = useState<Reservation[]>([]);
-    const [filteredReservations, setFilteredReservations] = useState<Reservation[]>([]);
+    const [reservations, setReservations] = useState<Item[]>([]);
+    const [filteredReservations, setFilteredReservations] = useState<Item[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalItem, setModalItem] = useState<Item | null>(null);
 
-    useEffect(() => {
-        const auth = getAuth();
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                setUserId(user.uid);
-            } else {
-                setUserId(null);
-            }
-        });
+    const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+    async function loadData(){
+        // console.log(discountedItems);
+        // console.log(surplusItems);
+        const db = getDatabase();
+            let discountedItems:Item[] = [];
+            let surplusItems:Item[] = [];
+            const discountedItemsRef = ref(db, 'items/discounted');
+            const surplusItemsRef = ref(db, 'items/surplus');
 
-        return () => unsubscribe();
+           await onValue(discountedItemsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const items: Item[] = Object.keys(data).map(key => ({
+                id: key,
+                type: 'Discounted',
+                item: data[key],
+                bookmarked: false // Initial bookmarked status
+                }));
+                discountedItems = items;
+            }
+            });
+
+            await onValue(surplusItemsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const items: Item[] = Object.keys(data).map(key => ({
+                id: key,
+                type: 'Surplus',
+                item: data[key],
+                bookmarked: false // Initial bookmarked status
+                }));
+                surplusItems = items;
+                // setSurplusItems(items);
+            }
+            });
+        // const db = getDatabase();
+        const dbRef = ref(db);
+        let tempArr:Item[] = [];
+        await get(child(dbRef, `users/${auth.currentUser?.uid}/myReservations`))
+        .then(async (snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                // console.log('Data exists',data);
+                tempArr = await Object(data).map(async (key: string) => {
+                    const temp = discountedItems.filter((item) => {return (item.id == key)});
+                    if(temp.length > 0){
+                        return temp[0];
+                    }else {
+                        const temp2 = surplusItems.filter((item) => {return (item.id == key)});
+                        return temp2[0];
+                    }                    
+                })
+                // console.log('TempArr:',tempArr.length);
+                return tempArr;
+            }}).catch((error) => {console.error('Error fetching data:', error);}) 
+        // console.log('TempArr:',tempArr.length);
+        return tempArr;
+    }
+    useEffect(() => {
+        (async () => {
+            loadData().then(async (data) => {
+                await setReservations(await data);
+            })
+        })();        
     }, []);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!userId) {
-                setError('User not authenticated.');
-                return;
-            }
-
-            try {
-                console.log(`Fetching reservations for user: ${userId}`);
-                const db = getDatabase();
-                const dbRef = ref(db);
-                const reservationsSnapshot = await get(child(dbRef, `users/${userId}/myReservations`));
-
-                if (reservationsSnapshot.exists()) {
-                    console.log('Reservations data exists');
-                    const reservationsData = reservationsSnapshot.val();
-                    const itemPromises = reservationsData.map(async (key: string) => {
-                        let itemSnapshot = await get(child(dbRef, `items/discounted/${key}`));
-                        if (!itemSnapshot.exists()) {
-                            itemSnapshot = await get(child(dbRef, `items/surplus/${key}`));
-                        }
-                        if (itemSnapshot.exists()) {
-                            console.log(`Item ${key} found`);
-                            return { id: key, ...itemSnapshot.val() };
-                        } else {
-                            console.log(`Item ${key} does not exist in both discounted and surplus`);
-                        }
-                        return null;
-                    });
-
-                    const reservationsList = (await Promise.all(itemPromises)).filter(item => item !== null);
-                    console.log('Reservations list:', reservationsList);
-                    setReservations(reservationsList as Reservation[]);
-                    setFilteredReservations(reservationsList as Reservation[]);
-                } else {
-                    console.log("No reservations data available");
-                    setError("No reservations data available");
-                }
-            } catch (err) {
-                console.error('Error fetching data:', err);
-                setError('Permission denied or another error occurred.');
-            }
-        };
-
-        fetchData();
-    }, [userId]);
-
+    
+     
     useEffect(() => {
         if (searchTerm === '') {
             setFilteredReservations(reservations);
         } else {
-            const filtered = reservations.filter(reservation => 
-                reservation.dish.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                reservation.address.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            setFilteredReservations(filtered);
+            // const filtered = reservations.filter(reservation => 
+            //     // reservation.dish.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            //     // reservation.address.toLowerCase().includes(searchTerm.toLowerCase())
+            // );
+            // setFilteredReservations(filtered);
         }
     }, [searchTerm, reservations]);
 
-    const renderItem = ({ item }: { item: Reservation }) => (
-        <TouchableOpacity onPress={() => { setModalItem(item as unknown as Item); setModalVisible(true); }}>
+    const renderItem = ({ item }: { item: Item }) => {   
+        // console.log();
+             
+        return (
+        <TouchableOpacity onPress={() => { setModalItem(item); setModalVisible(true); }}>
             <View style={styles.card}>
-                <Image source={{ uri: item.image }} style={styles.image} />
-                <Text style={styles.title}>{item.dish}</Text>
-                <Text style={styles.address}>{item.address}</Text>
-                <Text style={styles.rating}>{item.rating} ⭐</Text>
+                {/* <Image source={{ uri: item.item.photoUrl }} style={styles.image} /> */}
+                {/* <Text style={styles.title}>{item.dish}</Text>
+                <Text style={styles.address}>{item.address}</Text> */}
+                <Text style={styles.rating}>{item.id} ⭐</Text>
             </View>
         </TouchableOpacity>
-    );
-
-    if (error) {
-        return <Text>{error}</Text>;
-    }
+    )};
+    
+    
+    // if (error) {
+    //     return <Text>{error}</Text>;
+    // }
 
     return (
         <>
-            <Stack.Screen options={{ title: 'My Reservations!', headerBackTitleVisible: false, headerSearchBarOptions: { placeholder: 'Search' } }} />
-            <View style={styles.header}>
-                <TextInput
+            <Stack.Screen options={{ title: 'My Reservations!', headerBackTitleVisible: false, headerSearchBarOptions: { placeholder: 'Search' }}}  />
+            {/* <View style={styles.header}> */}
+                {/* <TextInput
                     style={styles.searchBar}
                     placeholder="Search"
                     placeholderTextColor= '#a0a0a0'
                     value={searchTerm}
                     onChangeText={setSearchTerm}
-                />
-            </View>
-
-            <FlatList
-                data={filteredReservations}
-                keyExtractor={item => item.id}
-                renderItem={renderItem}
-            />
-
-            {modalItem && (
-                <Modal visible={modalVisible} transparent={true} onRequestClose={() => setModalVisible(false)}>
-                    <View style={{ width: "100%", height: "100%", justifyContent: 'center', alignItems: "center" }}>
-                        <TouchableOpacity
-                            onPress={() => setModalVisible(false)}
-                            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.5)" }}>
-                        </TouchableOpacity>
-                        <View style={{ width: "85%", height: "80%", backgroundColor: "white", borderRadius: 10, shadowRadius: 10 }}>
-                            <View style={{ padding: 10, height: "100%" }}>
-                                <PressableIcon style={{ marginTop: 20 }} onPress={() => { setModalVisible(false) }} size={30} name="arrow-back-outline" />
-                                <View style={{ width: "100%", height: '80%' }}>
-                                    <View style={[styles.itemHeader, { width: '100%', height: "15%", flexDirection: "row", alignItems: "flex-start" }]}>
-                                        <View style={[styles.itemTextContainer, { width: "80%" }]}>
-                                            <Text style={[styles.itemTitle, { fontSize: 24 }]}>{modalItem.title}</Text>
-                                            <Text style={[styles.itemLocation, { flexWrap: "wrap" }]}>
-                                                <Text>{modalItem.location.Road}, </Text>
-                                                <Text>{modalItem.location.Block}, </Text>
-                                                <Text>{modalItem.location.UnitNumber}, </Text>
-                                                <Text>{modalItem.location.PostalCode}</Text>
-                                            </Text>
-                                        </View>
-                                        <Text style={[styles.itemRating, { fontSize: 20 }]}>{modalItem.rating.toFixed(1)} ⭐</Text>
-                                    </View>
-                                    <View style={{ width: "100%", height: "100%" }}>
-                                        <ScrollView>
-                                            <Image source={{ uri: modalItem.photoUrl }} style={{ marginBottom: 10, borderWidth: 1, borderColor: "black", width: "100%", height: 200 }} />
-                                            <View style={styles.itemContainer}>
-                                                <Text style={styles.itemTitle}>Description</Text>
-                                                <Text>{modalItem.description}</Text>
-                                            </View>
-                                            <View style={styles.itemContainer}>
-                                                <Text style={styles.itemTitle}>Quantity</Text>
-                                                <Text>{modalItem.quantity}</Text>
-                                            </View>
-                                            <View style={styles.itemContainer}>
-                                                <Text style={styles.itemTitle}>Instructions</Text>
-                                                <Text>{modalItem.instructions}</Text>
-                                            </View>
-                                            <View style={styles.itemContainer}>
-                                                <Text style={styles.itemTitle}>Location</Text>
-                                                <MapView style={{ width: "100%", height: 200, borderWidth: 1, borderColor: "black" }} region={{ latitude: modalItem.latitude, longitude: modalItem.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 }}>
-                                                    <Marker coordinate={{ latitude: modalItem.latitude, longitude: modalItem.longitude }} />
-                                                </MapView>
-                                            </View>
-                                        </ScrollView>
-                                    </View>
+                /> */}
+            {/* </View> */}                
+            <View style={{width:"100%",height:"100%", alignItems:"center",justifyContent:"center"}}>
+                <ScrollView style={{margin:40, width:'80%', height:"100%"}}>
+                    <View>
+                    {reservations.length>0 && ( Object(reservations).map(async (reservations:Item) =>{
+                        const item = await reservations;
+                        // console.log(item);
+                        
+                        return(
+                            <View style={{marginBottom:10}}>
+                            <TouchableOpacity onPress={() => { setModalItem(item); setModalVisible(true); }}>
+                                <Image src={item.item.photoUrl} style={{ marginBottom: 10, borderWidth: 1, borderColor: "black", width: "100%", height: 200 }}></Image>
+                                <View style={styles.itemHeader}>
+                                <Text style={styles.itemTitle}>{item.item.title}</Text>
+                                <PressableIcon
+                                    name={'bookmark-outline'}
+                                    size={24}
+                                />
                                 </View>
+                                <View style={styles.itemTextContainer}>
+                                <Text style={styles.itemStore}>{item.item.description}</Text>
+                                <Text style={styles.itemLocation}>
+                                    {item.item.location.Road ? item.item.location.Road : ""},
+                                    {item.item.location.Block ? item.item.location.Block : ""},
+                                    {item.item.location.UnitNumber ? item.item.location.UnitNumber : ""},
+                                    {item.item.location.PostalCode ? item.item.location.PostalCode : ""}
+                                </Text>
+                                <Text style={styles.itemRating}>{item.item.rating} ⭐️</Text>
+                                </View>
+                            </TouchableOpacity>
                             </View>
-                        </View>
+                        )
+                    })
+                    )}
                     </View>
-                </Modal>
-            )}
+                </ScrollView>
+            </View>
         </>
     );
 };
