@@ -169,7 +169,7 @@ export default function LocationPage() {
             <View style={[{ marginTop: "20%", width: "100%", height: "80%", zIndex: -10, position: "absolute", bottom: 0 }]}>
                 <MapView style={{ width: "100%", height: "100%" }} showsUserLocation region={region}>
                     {discountedItems && discountedItems.map((item) => (
-                        <TouchableOpacity style={styles.markerContainer}
+                        <TouchableOpacity style={styles.markerContainer} key={item.id}
                             onPress={() => {
                                 // console.log("Clicked", item.id),
                                     setModalItem(item);

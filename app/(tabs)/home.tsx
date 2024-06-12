@@ -289,7 +289,10 @@ export default function HomeTab({ navigation }: Props) {
 
       <SafeAreaView style={styles.safeArea}>
         <ScrollView style={styles.scrollViewContainer}>
-          {chosenItems.map((item) => (
+          {chosenItems && chosenItems.length === 0 && (
+            <Text style={{textAlign:"center"}}>Loading...</Text>
+            )}
+          {chosenItems && chosenItems.map((item) => (
             <TouchableOpacity
               key={item.id}
               style={styles.itemContainer}

@@ -135,6 +135,7 @@ const ArticlesList: React.FC<ArticlesListProps> = ({ searchQuery }) => {
         animationType="slide"
         onRequestClose={closeModal}
       >
+        {!selectedArticle && <Text style={{textAlign:"center"}}>Loading...</Text>}
         {selectedArticle && (
           <View style={styles.modalContainer}>
             <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
