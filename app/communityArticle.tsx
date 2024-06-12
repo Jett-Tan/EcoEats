@@ -1,4 +1,4 @@
-import { child, get, getDatabase, ref, update } from 'firebase/database';
+import { child, get, getDatabase, onValue, ref, update } from 'firebase/database';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -28,16 +28,17 @@ const ArticlesList: React.FC<ArticlesListProps> = ({ searchQuery }) => {
       const db = getDatabase();
       const dbRef = ref(db);
       const snapshot = await get(child(dbRef, 'articles'));
-      const articlesList: Article[] = [];
-
-      if (snapshot.exists()) {
-        snapshot.forEach(childSnapshot => {
-          const article = { id: childSnapshot.key, ...childSnapshot.val() } as Article;
-          articlesList.push(article);
-        });
-      }
-
-      setArticles(articlesList);
+      await onValue(child(dbRef, 'articles'), (snapshot) => {
+        console.log(snapshot.val());
+        const articlesList: Article[] = [];
+        if (snapshot.exists()) {
+          snapshot.forEach(childSnapshot => {
+            const article = { id: childSnapshot.key, ...childSnapshot.val() } as Article;
+            articlesList.push(article);
+          });
+        }
+        setArticles(articlesList);
+      })
     };
 
     fetchArticles();
