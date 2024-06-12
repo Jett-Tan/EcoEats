@@ -209,7 +209,6 @@ export default function HomeTab() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{animation:"slide_from_right"}}/>
       <View style={styles.header}>
         <TextInput
           style={styles.searchBar}
