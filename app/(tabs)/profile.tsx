@@ -6,7 +6,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'; //https://o
 
 import CustomButton from '@/components/CustomButton';
 import Input from "@/components/Input";
-import Interests, { preferences } from '@/components/Interests';
+import Interests, { defaultPreferences, preferences } from '@/components/Interests';
 import { auth } from '@/components/auth/firebaseConfig';
 import { Icon } from "@/components/navigation/Icon";
 import { router } from "expo-router";
@@ -107,8 +107,9 @@ export default function ProfilePage() {
     }
     if(obj.myPreferences){
       setMyPreferences(obj.myPreferences.myPreferences)
-    } else {
-      console.log("no preferences")
+      } else {
+        console.log("no preferences")
+        setMyPreferences(defaultPreferences)
     }
   } 
   

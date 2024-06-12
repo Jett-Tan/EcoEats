@@ -13,6 +13,8 @@ export default function Index() {
     const[password, setPassword] = useState('');
     const[passwordError, setPasswordError] = useState(''); 
     
+    const [signupError,setSignupError] = useState('');
+
     const router = useRouter();
     
     const handleSignup = () => {
@@ -24,11 +26,10 @@ export default function Index() {
             router.push('/createProfile');
             console.log('====================================');
         }).catch((error) => {
-            const errorCode = error.code;
+            const errorCode:string = error.code;
             const errorMessage = error.message;
             console.log('====================================');
-            console.log('Error Code:', errorCode);
-            console.log('Error Message:', errorMessage);
+            setSignupError(errorCode.replace('auth/','').split('-').join(' '));
             console.log('====================================');
         })
     }
@@ -63,6 +64,7 @@ export default function Index() {
                     <Text style={styles.button_Text}>Create Account</Text>
                 </View>
             </Pressable>
+            {signupError ? <Text style={{color:"red",textTransform:"capitalize", fontSize:12}}>{signupError}</Text> : null}
             <Text style={styles.paragraph_Box}>
                 <Text style={styles.paragraph}>Already have an account? </Text>
                 <Text style={[styles.paragraph,styles.paragraph_Bold]}>

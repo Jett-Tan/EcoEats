@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet, Image, Pressable } from "react-native";
 import { Link, useRouter} from 'expo-router';
-import { useState } from "react";
-import { getDatabase, ref, set, child, get  } from "firebase/database";
+import { useEffect, useState } from "react";
+import { getDatabase, ref, set, child, get, onValue  } from "firebase/database";
 
 import { Icon } from "@/components/navigation/Icon";
 import Input from "@/components/Input";
@@ -21,16 +21,24 @@ export default function Index() {
             myPreferences,
         });
     }
-    get(ref(db, `users/`+ auth.currentUser?.uid)).then((snapshot) => {
-    if (snapshot.exists()) {
-        console.log(snapshot.val());
-        setName(snapshot.val().firstName);
-    } else {
-        console.log("No data available");
-    }
-    }).catch((error) => {
-        console.error("error", error);
-    });
+    useEffect(() => {
+        (async () => {
+            delay(100);
+        onValue(ref(db, `users/`+ auth.currentUser?.uid), (snapshot) => {
+            if (snapshot.exists()) {
+                console.log(snapshot.val());
+                setName(snapshot.val().firstName);
+            } else {
+                console.log("No data available");
+            }
+        })})
+    }, []);
+    
+    const delay = async (ms: number) => await new Promise((res) => setTimeout(res, ms));
+    // get(ref(db, `users/`+ auth.currentUser?.uid)).then((snapshot) => {
+    // }).catch((error) => {
+    //     console.error("error", error);
+    // });
     return (
         <View style={styles.container}>
             <View style={styles.navigation}>

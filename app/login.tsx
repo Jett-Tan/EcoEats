@@ -26,12 +26,12 @@ export default function Index() {
             router.push('/(tabs)/home');
             console.log('====================================');
         }).catch((error) => {
-            const errorCode = error.code;
+            const errorCode:string = error.code;
             const errorMessage = error.message;
             console.log('====================================');
             console.log('Error Code:', errorCode);
             console.log('Error Message:', errorMessage);
-            setLoginError(errorCode);
+            setLoginError(errorCode.replace('auth/','').split('-').join(' '));
             console.log('====================================');
         })
     }
@@ -58,7 +58,7 @@ export default function Index() {
                 onChangeText={setPassword} 
             />
             <CustomButton text="Login" style={{buttonContainer: styles.button,button: {},text: styles.button_Text}} type="" onPress={handleLogin} />
-            {loginError && <Text style={{color:"red", fontSize:12}}>{loginError}</Text>}
+            {loginError && <Text style={{color:"red", textTransform:"capitalize",fontSize:12}}>{loginError}</Text>}
             <Text style={[styles.paragraph_Box,{marginTop:24}]}>
                 <Text style={styles.paragraph}>By signing up, you agree to our </Text>
                 <Text style={[styles.paragraph,styles.paragraph_Bold]}>Terms of Service</Text> 
