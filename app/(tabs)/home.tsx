@@ -143,10 +143,10 @@ export default function HomeTab({ navigation }: Props) {
 
   const reserve = async (id: string) => {
     const dbRef = ref(getDatabase());
-    const newPostKey = push(child(ref(db, `users/${auth.currentUser?.uid}`), '/myReservations')).key;
+    const newPostKey = push(child(ref(getDatabase(), `users/${auth.currentUser?.uid}`), '/myReservations')).key;
     const currReservation =
       get(child(dbRef, `users/${auth.currentUser?.uid}/myReservations`)).then((snapshot) => {
-        let updates = {}
+        let updates:any = {}
         if (snapshot.exists()) {
           console.log(snapshot.val());
           if (!snapshot.val().includes(id)) {
@@ -157,7 +157,7 @@ export default function HomeTab({ navigation }: Props) {
         } else {
           updates['/myReservations/'] = [id];
         }
-        update(ref(db, `users/${auth.currentUser?.uid}`), updates)
+        update(ref(getDatabase(), `users/${auth.currentUser?.uid}`), updates)
       }).catch((error) => {
         console.error(error);
       });

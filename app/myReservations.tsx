@@ -1,6 +1,6 @@
 import { auth } from '@/components/auth/firebaseConfig';
 import { PressableIcon } from '@/components/navigation/PressableIcon';
-import { Stack } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { child, get, getDatabase, ref, onValue, set } from 'firebase/database';
 import React, { useEffect, useState } from 'react';
@@ -130,10 +130,11 @@ const Reservations: React.FC = () => {
     // if (error) {
     //     return <Text>{error}</Text>;
     // }
+    const router = useRouter();
 
     return (
         <>
-            <Stack.Screen options={{ title: 'My Reservations!', headerBackTitleVisible: false, headerSearchBarOptions: { placeholder: 'Search' }}}  />
+            {/* <Stack.Screen options={{ title: 'My Reservations!', headerBackTitleVisible: false, headerSearchBarOptions: { placeholder: 'Search' }}}  /> */}
             {/* <View style={styles.header}> */}
                 {/* <TextInput
                     style={styles.searchBar}
@@ -142,9 +143,23 @@ const Reservations: React.FC = () => {
                     value={searchTerm}
                     onChangeText={setSearchTerm}
                 /> */}
-            {/* </View> */}                
-            <View style={{width:"100%",height:"100%", alignItems:"center",justifyContent:"center"}}>
-                <ScrollView style={{margin:40, width:'80%', height:"100%"}}>
+            {/* </View> */}  
+            <View style={styles.container}>
+            <View style={styles.navigation}>
+                <PressableIcon onPress={() => {router.push('./(tabs)/home')}} size={30} name="arrow-back-outline" />
+            </View>              
+            <View style={{alignItems:"center",position: "absolute",
+            top: 0,
+            left: 0,
+            marginLeft:"35%",
+            width:"30%",
+            marginTop:70,
+            height:30,
+            justifyContent:"center"}}>
+                <Text style={{textAlign:"center",fontSize:16, fontWeight:"bold"}}>My Reservations</Text>
+            </View>         
+            <View style={{marginTop:100, minHeight:"80%"}}>
+                <ScrollView style={{margin:40, width:'95%', height:"100%"}}>
                     <View>
                     {reservations.length>0 && ( Object(reservations).map(async (reservations:Item) =>{
                         const item = await reservations;
@@ -179,6 +194,7 @@ const Reservations: React.FC = () => {
                     </View>
                 </ScrollView>
             </View>
+            </View>              
         </>
     );
 };
@@ -186,7 +202,10 @@ const Reservations: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ecf0f1',
+        padding: 8,
     },
     reservationContainer: {
         flex: 1,
@@ -270,6 +289,15 @@ const styles = StyleSheet.create({
         color: '#ffcc00',
         marginTop: 4,
     },
+    navigation:{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        marginTop: 70,
+        width: "100%",
+        flexDirection: "row",
+        justifyContent: "flex-start",
+    }
 });
 
 export default Reservations;
