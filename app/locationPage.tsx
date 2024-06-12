@@ -175,7 +175,7 @@ export default function LocationPage() {
                                     setModalItem(item);
                                 setModalVisible(true);
                             } }><Marker
-                                key={item.id}
+                                // key={item.id}
                                 coordinate={{
                                     latitude: item.item.latitude,
                                     longitude: item.item.longitude,
@@ -188,7 +188,7 @@ export default function LocationPage() {
                         </TouchableOpacity>
                     ))}
                     {surplusItems && surplusItems.map((item) => (
-                        <TouchableOpacity style={styles.markerContainer}
+                        <TouchableOpacity style={styles.markerContainer} key={item.id}
                             onPress={() => {
                                 console.log("Clicked", item.id),
                                     setModalItem(item);

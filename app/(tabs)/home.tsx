@@ -59,8 +59,9 @@ export default function HomeTab() {
           item: data[key],
           bookmarked: false // Initial bookmarked status
         }));
+        // await loadNearest(items,true);
+        setDiscountedItems(items);
         await loadNearest(items,true);
-        // setDiscountedItems(items);
       }
     });
 
@@ -73,8 +74,9 @@ export default function HomeTab() {
           item: data[key],
           bookmarked: false // Initial bookmarked status
         }));
-        await loadNearest(items,false);
+        // await loadNearest(items,false);
         setSurplusItems(items);
+        await loadNearest(items,false);
       }
     });
 
@@ -89,10 +91,10 @@ export default function HomeTab() {
         setCurrBookmarkedItems(data);
       }
     });
-
+    // (async () => {await loadNearest()})();
+    // loadNearest();
   }, []);
-
-  const loadNearest = async (x :Item[],discounted:boolean) => {
+  const loadNearest = async (items:Item[],discounted:boolean) => {
     let locationa = await Location.getCurrentPositionAsync({ 
       accuracy: Location.LocationAccuracy.High, 
       timeInterval: 100, 
@@ -102,21 +104,21 @@ export default function HomeTab() {
       latitude:locationa.coords.latitude,
       longitude: locationa.coords.longitude
     });
-    const temp = await x.sort(
+    const temp = await items.sort(
       (a,b) => {
         return Math.sqrt(
-          (a.item.latitude-currLocation.latitude)**2 + 
-          (a.item.longitude-currLocation.longitude)**2
+          (a.item.latitude-locationa.coords.latitude)**2 + 
+          (a.item.longitude-locationa.coords.longitude)**2
         ) - 
           Math.sqrt(
-            (b.item.latitude-currLocation.latitude)**2 + 
-            (b.item.longitude-currLocation.longitude)**2)
+            (b.item.latitude-locationa.coords.latitude)**2 + 
+            (b.item.longitude-locationa.coords.longitude)**2)
         });
-    if(discounted){
-      setDiscountedItems(temp);
-    }else{
-      setSurplusItems(temp);
-    }
+        if(discounted){
+          setDiscountedItems(temp);
+        }else{
+          setSurplusItems(temp);
+        }
   }
 
   const loadBookmarks = (id: string) => {
