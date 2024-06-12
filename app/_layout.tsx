@@ -21,7 +21,7 @@ export default function RootLayout() {
       <Stack.Screen name="myPreferences" options={{ headerShown: false }}/>
       <Stack.Screen name="shareLocation" options={{ headerShown: false }}/>
       <Stack.Screen name="setLocation" options={{ headerShown: false }}/>
-      <Stack.Screen name="locationPage" options={{ headerShown: true }}/>
+      <Stack.Screen name="locationPage" options={{ headerShown: false }}/>
       <Stack.Screen name="myReservations" options={{ headerShown: false }}/>
       <Stack.Screen name="redeemEcoPoints" options={{ headerShown: true }}/>
       <Stack.Screen name="+not-found" />

@@ -136,19 +136,37 @@ export default function LocationPage() {
 
 
     return (
-        <><Stack.Screen options={{ title: '', headerBackTitleVisible: false }} /><View style={styles.container}>
-            <View style={[styles.navigation, { backgroundColor: "white", width: "100%", alignItems: "center", flexDirection: "column" }]}>
+        <>
+        {/* <Stack.Screen options={{ title: '', headerBackTitleVisible: false }} /><View style={styles.container}> */}
+            {/* <View style={{height:"20%", alignContent:"center",justifyContent:"center"}}> */}
+                           
+            <View style={{flexDirection:"row", position:"absolute",left:0,top:0,marginTop:70,width:"100%"}}>
+                <Text style={{textAlign:"center",fontSize:24,width:'100%', fontWeight:"bold"}}>Map</Text>
+            </View>
+            <View style={{flexDirection:"row", position:"absolute",left:0,top:0,marginTop:70,width:"100%"}}>
+                    <PressableIcon onPress={() => {router.back()}} size={30} name="arrow-back-outline" />
+            </View>
+            <View style={{alignItems:"center",position: "absolute",
+                top: 0,
+                left: 0,
+                marginLeft:"35%",
+                width:"30%",
+                marginTop:100,
+                justifyContent:"space-around"}}>
+                <Input
+                    type="Location"
+                    placeholder="Enter your postal code"
+                    style={{ inputBox: { marginTop: 10, width: 350,height:50, borderWidth: 1, borderColor: "black" }, input: {} }}
+                    header={false}
+                    onChangeText={(e:string) => search(e)} />
+            </View>    
+            {/* </View> */}
+            {/* <View style={[styles.navigation, { backgroundColor: "white", width: "100%", alignItems: "center", flexDirection: "column" }]}>
                 <Text style={[styles.paragraph_Bold, { alignSelf: "flex-start", width: "100%", textAlign: "center" }]}>Map</Text>
                 <View>
-                    <Input
-                        type="Location"
-                        placeholder="Enter your postal code"
-                        style={{ inputBox: { marginTop: 10, width: 350, borderWidth: 1, borderColor: "black" }, input: {} }}
-                        header={false}
-                        onChangeText={(e:string) => search(e)} />
                 </View>
-            </View>
-            <View style={[{ marginTop: 110, width: "100%", height: 950, zIndex: -10, position: "absolute", bottom: 0 }]}>
+            </View> */}
+            <View style={[{ marginTop: "20%", width: "100%", height: "80%", zIndex: -10, position: "absolute", bottom: 0 }]}>
                 <MapView style={{ width: "100%", height: "100%" }} showsUserLocation region={region}>
                     {discountedItems && discountedItems.map((item) => (
                         <TouchableOpacity style={styles.markerContainer}
@@ -266,7 +284,8 @@ export default function LocationPage() {
                     </View>
                 </View>
             </Modal>
-        </View></>
+        {/* </View> */}
+        </>
 
     );
 };

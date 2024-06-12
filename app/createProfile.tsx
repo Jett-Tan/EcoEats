@@ -17,7 +17,7 @@ export default function CreateProfile() {
     const [dob, setDob] = useState('');
     const [gender, setGender] = useState("");
     const [description, setDescription] = useState("");
-    const [userStars,setUserStars] = useState(0);
+    const [userStars,setUserStars] = useState(5);
 
     const [firstNameError, setFirstNameError] = useState("");
     const [lastNameError, setLastNameError] = useState("");
