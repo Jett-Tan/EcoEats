@@ -4,7 +4,7 @@ import { auth } from '@/components/auth/firebaseConfig';
 import { PressableIcon } from '@/components/navigation/PressableIcon'; // Ensure the path is correct
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { child, get, getDatabase, onValue, push, ref, set, update } from "firebase/database";
 import React, { useEffect, useState } from 'react';
 import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -209,6 +209,7 @@ export default function HomeTab() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{animation:"slide_from_right"}}/>
       <View style={styles.header}>
         <TextInput
           style={styles.searchBar}

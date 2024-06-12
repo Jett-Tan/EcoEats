@@ -38,6 +38,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'leaf' : 'leaf'} color={color} />
             ),
+            
             }}
       />
       
