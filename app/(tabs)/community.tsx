@@ -1,20 +1,20 @@
+import * as ImagePicker from "expo-image-picker"; // Import ImagePicker
+import { getDatabase, push, ref } from "firebase/database";
 import React, { useState } from "react";
 import {
+  Alert,
+  Image,
+  Modal,
   SafeAreaView,
   StatusBar,
+  StyleSheet,
   Text,
   TextInput,
-  View,
-  StyleSheet,
   TouchableOpacity,
-  Alert,
-  Modal,
-  Image,
+  View,
 } from "react-native";
-import { getDatabase, ref, push } from "firebase/database";
-import * as ImagePicker from "expo-image-picker"; // Import ImagePicker
-import ArticlesList from "../communityArticle";
 import app from "../../components/auth/firebaseConfig"; // Ensure this path is correct
+import ArticlesList from "../communityArticle";
 
 const Community = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -151,14 +151,14 @@ const Community = () => {
               textAlignVertical="top" // Ensure the text starts from the top
             />
             <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.modalButton} onPress={addArticle}>
-                <Text style={styles.modalButtonText}>Add</Text>
-              </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => setModalVisible(false)}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={addArticle}>
+                <Text style={styles.modalButtonText}>Add</Text>
               </TouchableOpacity>
             </View>
           </View>
