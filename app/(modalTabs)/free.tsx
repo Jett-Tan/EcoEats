@@ -118,7 +118,7 @@ export default function FreePage() {
             location: locationtemp,
             latitude: latitude,
             longitude: longitude,
-            rating: 0
+            rating: 5
         };
         if (isDataValid() && dataValidation.locationChecker(locationtemp)) {
             console.log('====================================');

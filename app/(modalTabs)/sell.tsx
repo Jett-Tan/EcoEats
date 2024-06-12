@@ -119,7 +119,7 @@ export default function SellPage() {
             location: locationtemp,
             latitude: latitude,
             longitude: longitude,
-            rating:0
+            rating:5
         };
         if (isDataValid()) {
             console.log('====================================');
