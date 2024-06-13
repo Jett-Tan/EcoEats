@@ -27,7 +27,7 @@ export default function Interests( props: {interests: preferences[], setInterest
     return (
         <>
             {props.interests.length === 0 && <Text>Loading...</Text>}
-            <View style={{marginTop:50,marginBottom:150,flexDirection:"row", flexWrap:"wrap", width:350}}>
+            <View style={{marginBottom:150,flexDirection:"row", flexWrap:"wrap", width:350}}>
                 {props.interests.map((interest) => {
                     return (
                         <TouchableOpacity key={interest.key} onPress={() => {

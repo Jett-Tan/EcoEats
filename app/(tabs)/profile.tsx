@@ -378,15 +378,31 @@ export default function ProfilePage() {
               setMyPreferences(e)
             }} 
             interests={[]}/> */}
-          {activeTab === 'star' && <StarTab />}
-          {activeTab === 'bookmark' && <BookmarkTab />}
-          {activeTab === 'pref' && 
-            <Interests 
-              setInterests={(e:preferences[]) => {
-                writeUserPreferences()
-                setMyPreferences(e)
-              }}  
-              interests={myPreferences}/>}
+          {activeTab === 'star' && (
+            <View>
+              <Text style={{textAlign:"center",fontSize:20, paddingBottom:10}}>Reviews</Text>
+              <StarTab />
+            </View>
+            )}
+          {activeTab === 'bookmark' && (
+            <View>
+              <Text style={{textAlign:"center",fontSize:20,paddingBottom:10}}>Saved</Text>
+              <BookmarkTab />
+            </View>
+            )}
+          {activeTab === 'pref' &&(
+            <View>
+              <Text style={{textAlign:"center",fontSize:20}}>My Preferences</Text>
+                <Interests 
+                  setInterests={(e:preferences[]) => {
+                    writeUserPreferences()
+                    setMyPreferences(e)
+                  }}  
+                  interests={myPreferences}/>
+            </View>
+                )}
+
+          
           {/* {activeTab === 'pref' && <PrefTab />} */}
         </View>
       </View>
