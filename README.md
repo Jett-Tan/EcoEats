@@ -2,7 +2,7 @@
 
 ## Overview
 
-**EcoEats** is a sustainable food delivery platform that connects users with eco-friendly restaurants and meal providers. Our mission is to promote sustainable eating habits by prioritizing restaurants that use organic ingredients, minimal packaging, and sustainable sourcing methods.
+**EcoEats** is a sustainable food delivery platform that connects users with eco-friendly restaurants and meal providers. Our mission is to reduce food waste and promote affordability by partnering with businesses that prioritize sustainable sourcing and the redistribution of surplus food.
 
 EcoEats aims to minimize food waste while promoting affordability and sustainability by helping consumers access discounted surplus food. By developing a digital platform, we facilitate the redistribution of surplus food from businesses to consumers at discounted rates or zero cost, thereby minimizing waste.
 
